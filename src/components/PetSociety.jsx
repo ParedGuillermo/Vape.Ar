@@ -23,7 +23,7 @@ export default function PetSociety() {
       <h1 className="mb-8 text-3xl font-bold text-center text-purple-800">Pet Society 🐾</h1>
 
       <p className="mb-6 text-center text-gray-700">
-        Bienvenido a Pet Society, tu espacio de confianza para aprender, compartir y conectarte con la comunidad pet friendly.
+        Bienvenido a Pets Society, tu espacio de confianza para aprender, compartir y conectarte con la comunidad pet friendly.
       </p>
 
       <div className="grid gap-6 md:grid-cols-2">
