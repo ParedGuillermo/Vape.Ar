@@ -17,7 +17,7 @@ export default function CartModal({ onClose }) {
         .toFixed(2)}`
     : "Hola! No tengo productos en el carrito.";
 
-  const whatsappUrl = `https://wa.me/549113380557?text=${encodeURIComponent(
+  const whatsappUrl = `https://wa.me/5491133380557?text=${encodeURIComponent(
     whatsappMessage
   )}`;
 
