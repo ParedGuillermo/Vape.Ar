@@ -15,7 +15,7 @@ import agregarIcon from "../assets/home/agregar-icon.png";
 import reportlostIcon from "../assets/home/reportar-perdida-icon.png";
 import administrarQRIcon from "../assets/home/administrar-qr-icon.png";
 import petSocietyIcon from "../assets/home/pet-society-icon.png"; // <-- nuevo ícono
-import adminBlogIcon from "../assets/home/adminblogicon.png"; // o usa uno que tengas
+import adminBlogIcon from "../assets/home/admin-blog-icon.png"; // o usa uno que tengas
 
 
 import CartModal from "./CartModal";
