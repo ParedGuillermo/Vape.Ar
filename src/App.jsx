@@ -11,7 +11,7 @@ import Profile from "./pages/Profile";
 import Scan from "./pages/Scan";
 import Adopciones from "./pages/Adopciones";
 import AdminPanel from "./pages/AdminPanel";
-import AdminBlog from "./pages/Adminblog";  // <-- NUEVO import
+import AdminBlog from "./pages/Adminblog";
 import Productos from "./pages/Productos";
 import CargarProducto from "./pages/CargarProductos";
 import ReportLostPets from "./components/ReportLostPets";
@@ -23,6 +23,9 @@ import Entrenamiento from "./components/PetSocietyPages/Entrenamiento";
 import Historias from "./components/PetSocietyPages/Historias";
 import Eventos from "./components/PetSocietyPages/Eventos";
 import Recursos from "./components/PetSocietyPages/Recursos";
+
+// Importa SuccessStories
+import SuccessStories from "./components/SuccessStories";
 
 import BottomNav from "./components/BottomNav";
 import { CartProvider } from "./components/CartContext";
@@ -104,6 +107,12 @@ export default function App() {
                     <AdminBlog />
                   </ProtectedRoute>
                 }
+              />
+
+              {/* Nueva ruta para casos de éxito (testimonios) */}
+              <Route
+                path="/casos-exito"
+                element={<SuccessStories />}
               />
             </Routes>
           </div>

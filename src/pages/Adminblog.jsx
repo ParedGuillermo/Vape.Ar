@@ -10,6 +10,7 @@ export default function AdminBlog() {
   const isAdmin = user?.email === "walterguillermopared@gmail.com";
 
   const [entradas, setEntradas] = useState([]);
+  const [testimonios, setTestimonios] = useState([]);  // Nuevo estado para testimonios
   const [editing, setEditing] = useState(null);
   const [newEntry, setNewEntry] = useState({
     titulo: "",
@@ -22,6 +23,7 @@ export default function AdminBlog() {
   useEffect(() => {
     if (!isAdmin) return navigate("/");
     fetchEntradas();
+    fetchTestimonios();  // Recuperamos testimonios
   }, [user]);
 
   const fetchEntradas = async () => {
@@ -29,11 +31,22 @@ export default function AdminBlog() {
     if (!error) setEntradas(data);
   };
 
+  const fetchTestimonios = async () => {
+    const { data, error } = await supabase
+      .from("entradas_blog")
+      .select("*")
+      .eq("categoria", "Testimonios")  // Filtramos por testimonios
+      .order("creado_en", { ascending: false });
+
+    if (!error) setTestimonios(data);
+  };
+
   const handleSave = async () => {
     const { error } = await supabase.from("entradas_blog").insert([newEntry]);
     if (!error) {
       setNewEntry({ titulo: "", categoria: "Entrenamiento", contenido: "", imagen_url: "", autor: user?.email });
       fetchEntradas();
+      fetchTestimonios();  // Volver a cargar los testimonios
     }
   };
 
@@ -41,6 +54,7 @@ export default function AdminBlog() {
     if (!confirm("¿Eliminar esta entrada?")) return;
     await supabase.from("entradas_blog").delete().eq("id", id);
     fetchEntradas();
+    fetchTestimonios();  // Volver a cargar los testimonios después de eliminar
   };
 
   const handleUpdate = async () => {
@@ -48,12 +62,14 @@ export default function AdminBlog() {
     await supabase.from("entradas_blog").update(rest).eq("id", id);
     setEditing(null);
     fetchEntradas();
+    fetchTestimonios();  // Volver a cargar los testimonios después de editar
   };
 
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <h1 className="mb-4 text-3xl font-bold">📝 Administrar Blog Pet Society</h1>
 
+      {/* Formulario para nueva entrada */}
       <section className="p-4 mb-6 bg-white rounded shadow">
         <h2 className="mb-3 text-xl font-semibold">➕ Nueva Entrada</h2>
         <input
@@ -73,6 +89,7 @@ export default function AdminBlog() {
           <option>Historias</option>
           <option>Recursos</option>
           <option>Salud</option>
+          <option>Testimonios</option> {/* Nueva categoría para testimonios */}
         </select>
         <textarea
           placeholder="Contenido"
@@ -96,8 +113,61 @@ export default function AdminBlog() {
         </button>
       </section>
 
+      {/* Sección de testimonios */}
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold">🗂 Entradas existentes</h2>
+        <h2 className="text-xl font-semibold">🗂 Testimonios</h2>
+        {testimonios.map((testimonio) => (
+          <div key={testimonio.id} className="p-4 bg-white rounded shadow">
+            {editing?.id === testimonio.id ? (
+              <>
+                <input
+                  type="text"
+                  value={editing.titulo}
+                  onChange={(e) => setEditing({ ...editing, titulo: e.target.value })}
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <textarea
+                  value={editing.contenido}
+                  onChange={(e) => setEditing({ ...editing, contenido: e.target.value })}
+                  className="w-full p-2 mb-2 border rounded"
+                  rows={4}
+                />
+                <input
+                  type="text"
+                  value={editing.imagen_url}
+                  onChange={(e) => setEditing({ ...editing, imagen_url: e.target.value })}
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <div className="flex gap-2 mt-2">
+                  <button onClick={handleUpdate} className="px-3 py-1 text-white bg-green-600 rounded">Guardar</button>
+                  <button onClick={() => setEditing(null)} className="px-3 py-1 text-white bg-gray-400 rounded">Cancelar</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-bold">{testimonio.titulo}</h3>
+                <p className="text-sm text-gray-600">{testimonio.categoria}</p>
+                <p className="mt-1 text-sm">{testimonio.contenido?.slice(0, 200)}...</p>
+                {testimonio.imagen_url && (
+                  <img
+                    src={testimonio.imagen_url}
+                    alt="Ilustración"
+                    className="w-full mt-2 rounded"
+                  />
+                )}
+                <div className="flex gap-2 mt-3">
+                  <button onClick={() => setEditing(testimonio)} className="text-sm text-blue-600">Editar</button>
+                  <button onClick={() => handleDelete(testimonio.id)} className="text-sm text-red-600">Eliminar</button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </section>
+
+      {/* Otras entradas */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold">🗂 Otras Entradas</h2>
         {entradas.map((entrada) => (
           <div key={entrada.id} className="p-4 bg-white rounded shadow">
             {editing?.id === entrada.id ? (

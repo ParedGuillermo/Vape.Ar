@@ -3,17 +3,40 @@ import React from 'react';
 const TrackingDevices = () => (
   <section className="px-4">
     <h2 className="mb-4 text-2xl font-semibold text-center">Dispositivos de Rastreo</h2>
-    <div className="grid grid-cols-2 gap-4">
-      {/* Tarjetas con dispositivos */}
-      <div className="p-4 text-center bg-gray-100 rounded-lg">
-        <h3 className="mb-2 font-semibold">Dispositivo A</h3>
-        <p className="text-sm text-gray-700">GPS con cobertura nacional.</p>
+
+    <div className="space-y-6">
+      {/* Dispositivo actual (Códigos QR) */}
+      <div className="p-4 text-center bg-gray-100 rounded-lg shadow-sm">
+        <h3 className="mb-2 font-semibold">Códigos QR de Rastreo</h3>
+        <p className="text-sm text-gray-700">Ideal para mascotas. Fácil escaneo para rastrear en tiempo real.</p>
+        <img
+          src="https://via.placeholder.com/150" // Imagen de referencia (reemplazar con imagen real)
+          alt="Código QR"
+          className="object-cover w-32 h-32 mx-auto mt-4 rounded-full"
+        />
+        <div className="mt-4">
+          {/* Botón que redirige a WhatsApp */}
+          <a
+            href="https://wa.me/5491133380557?text=Hola,%20me%20interesa%20obtener%20un%20código%20QR%20para%20mi%20mascota"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+          >
+            Solicitar Código
+          </a>
+        </div>
       </div>
-      <div className="p-4 text-center bg-gray-100 rounded-lg">
-        <h3 className="mb-2 font-semibold">Dispositivo B</h3>
-        <p className="text-sm text-gray-700">Alarma sonora para rápida localización.</p>
+
+      {/* Dispositivo futuro (Tags tipo AirTag) */}
+      <div className="p-4 text-center bg-gray-100 rounded-lg shadow-sm">
+        <h3 className="mb-2 font-semibold">AirTags y Dispositivos Similares</h3>
+        <p className="text-sm text-gray-700">Próximamente podrás rastrear a tu mascota con dispositivos como AirTag, Moto Tag, Galaxy Smart Tag, y más.</p>
+        <img
+          src="https://via.placeholder.com/150" // Imagen de referencia (reemplazar con imagen real)
+          alt="AirTag"
+          className="object-cover w-32 h-32 mx-auto mt-4 rounded-full"
+        />
       </div>
-      {/* Más dispositivos */}
     </div>
   </section>
 );
