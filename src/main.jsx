@@ -5,9 +5,9 @@ import './index.css';
 import 'leaflet/dist/leaflet.css';
 
 // Registro del Service Worker (PWA)
-if (navigator.serviceWorker) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
+    navigator.serviceWorker.register('/service-worker.js')  // Ruta correcta si está en /public
       .then((registration) => {
         console.log('Service Worker registrado con éxito:', registration);
       })
