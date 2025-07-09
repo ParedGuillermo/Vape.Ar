@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import QrScanner from "react-qr-scanner";
 import { supabase } from "../supabaseClient";
 
@@ -8,6 +8,12 @@ export default function Scan() {
   const [facingMode, setFacingMode] = useState("environment");
   const [mascota, setMascota] = useState(null);
   const [dueño, setDueño] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 3000); // 3 segundos de carga
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleScan = async (data) => {
     if (data && data.text) {
@@ -87,13 +93,21 @@ export default function Scan() {
             Cambiar cámara ({facingMode === "environment" ? "Trasera" : "Frontal"})
           </button>
 
-          <div className="w-full overflow-hidden bg-black rounded aspect-square">
+          <div className="relative w-full overflow-hidden bg-black rounded aspect-square">
+            {/* Spinner animado de carga */}
+            {loading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black opacity-75">
+                <div className="w-24 h-24 border-4 border-t-4 border-white rounded-full animate-spin"></div>
+              </div>
+            )}
+
             <QrScanner
               delay={300}
               onScan={handleScan}
               onError={handleError}
               className="w-full h-full"
               constraints={{ video: { facingMode } }}
+              onLoad={() => setLoading(false)} // Desactivar loading cuando la cámara esté lista
             />
           </div>
         </div>
