@@ -2,8 +2,8 @@ import React from 'react';
 import HeroSection from '../components/HeroSection';
 import FeaturedPets from '../components/FeaturedPets';
 import EsencialesCarousel from '../components/EsencialesCarousel';
-import LostPetsMap from '../components/LostPetsMap';
-import QuickGuide from '../components/QuickGuide';
+// import LostPetsMap from '../components/LostPetsMap';
+import PetSociety from '../components/PetSociety';
 import SuccessStories from '../components/SuccessStories';
 import TrackingDevices from '../components/TrackingDevices';
 import { useNavigate } from 'react-router-dom';
@@ -50,40 +50,79 @@ export default function Home() {
         </section>
       )}
 
-      {/* Mascotas Destacadas */}
+      {/* Mascotas Destacadas - Resumen */}
       <section className="px-6 py-8 bg-white shadow-md rounded-t-xl">
-        <h2 className="mb-4 text-xl font-bold text-center">Mascotas Destacadas</h2>
-        <FeaturedPets />
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-purple-800"></h2>
+          <button
+            onClick={() => navigate('/mascotas-destacadas')}
+            className="text-sm font-semibold text-blue-600 hover:underline"
+            type="button"
+          >
+            
+          </button>
+        </div>
+        <FeaturedPets summary={true} maxItems={3} />
       </section>
 
-      {/* Productos Esenciales */}
+      {/* Productos Esenciales - Resumen */}
       <section className="px-6 py-8 mt-6 shadow-sm bg-gray-50 rounded-xl">
-        <h2 className="mb-4 text-xl font-bold text-center">Productos Esenciales</h2>
-        <EsencialesCarousel />
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-purple-800"></h2>
+          <button
+            onClick={() => navigate('/productos')}
+            className="text-sm font-semibold text-blue-600 hover:underline"
+            type="button"
+          >
+            
+          </button>
+        </div>
+        <EsencialesCarousel summary={true} maxItems={5} />
       </section>
 
-      {/* Mapa de Avistamientos */}
-      <section className="px-6 py-8 mt-6 bg-white shadow-md rounded-xl">
-        <h2 className="mb-4 text-xl font-bold text-center">Mapa de Avistamientos</h2>
-        <LostPetsMap />
+      {/* Pet Society - Resumen */}
+      <section className="px-6 py-8 mt-6 bg-white shadow-sm rounded-xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-purple-800"></h2>
+          <button
+            onClick={() => navigate('/pet-society')}
+            className="text-sm font-semibold text-blue-600 hover:underline"
+            type="button"
+          >
+            
+          </button>
+        </div>
+        <PetSociety summary={true} maxItems={3} />
       </section>
 
-      {/* Guía Rápida */}
-      <section className="px-6 py-8 mt-6 shadow-sm bg-gray-50 rounded-xl">
-        <h2 className="mb-4 text-xl font-bold text-center">Guía Rápida</h2>
-        <QuickGuide />
+      {/* Casos de Éxito - Resumen */}
+      <section className="px-6 py-8 mt-6 shadow-md bg-gray-50 rounded-xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-purple-800"></h2>
+          <button
+            onClick={() => navigate('/casos-exito')}
+            className="text-sm font-semibold text-blue-600 hover:underline"
+            type="button"
+          >
+            
+          </button>
+        </div>
+        <SuccessStories summary={true} maxItems={3} />
       </section>
 
-      {/* Casos de Éxito */}
-      <section className="px-6 py-8 mt-6 bg-white shadow-md rounded-xl">
-        <h2 className="mb-4 text-xl font-bold text-center">Casos de Éxito</h2>
-        <SuccessStories />
-      </section>
-
-      {/* Dispositivos de Rastreo */}
-      <section className="px-6 py-8 mt-6 mb-12 shadow-sm bg-gray-50 rounded-b-xl">
-        <h2 className="mb-4 text-xl font-bold text-center">Dispositivos de Rastreo</h2>
-        <TrackingDevices />
+      {/* Dispositivos de Rastreo - Resumen */}
+      <section className="px-6 py-8 mt-6 mb-12 bg-white shadow-sm rounded-b-xl">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-purple-800"></h2>
+          <button
+            onClick={() => navigate('/dispositivos')}
+            className="text-sm font-semibold text-blue-600 hover:underline"
+            type="button"
+          >
+           
+          </button>
+        </div>
+        <TrackingDevices summary={true} maxItems={5} />
       </section>
     </div>
   );

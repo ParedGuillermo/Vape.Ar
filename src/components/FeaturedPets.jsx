@@ -21,7 +21,7 @@ export default function FeaturedPets() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Mascotas en Adopción</h2>
         <button
           onClick={() => navigate("/adopciones")}
@@ -30,7 +30,7 @@ export default function FeaturedPets() {
           Ver más →
         </button>
       </div>
-      <div className="flex overflow-x-auto space-x-4 pb-2">
+      <div className="flex pb-2 space-x-4 overflow-x-auto">
         {mascotas.map((m) => (
           <div
             key={m.id}
@@ -39,9 +39,9 @@ export default function FeaturedPets() {
             <img
               src={m.foto_url}
               alt={m.nombre}
-              className="w-full h-28 object-cover rounded mb-2"
+              className="object-cover w-full mb-2 rounded h-28"
             />
-            <p className="font-semibold text-sm">{m.nombre}</p>
+            <p className="text-sm font-semibold">{m.nombre}</p>
             <p className="text-xs text-gray-500">{m.raza || m.especie}</p>
           </div>
         ))}

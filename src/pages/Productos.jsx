@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { useCart } from "../components/CartContext"; // Importamos el hook
 
 export default function Productos() {
   const [productos, setProductos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [categoriaFiltro, setCategoriaFiltro] = useState("todos");
   const [loading, setLoading] = useState(true);
+
+  const { addToCart } = useCart(); // Usamos el hook del carrito
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -21,7 +24,6 @@ export default function Productos() {
     fetchProductos();
   }, []);
 
-  // Agrupamos productos por categoría
   const productosPorCategoria = productos.reduce((acc, producto) => {
     const cat = producto.categoria || "Otros";
     if (!acc[cat]) acc[cat] = [];
@@ -29,7 +31,6 @@ export default function Productos() {
     return acc;
   }, {});
 
-  // Filtro de búsqueda
   const filtrar = (lista) => {
     return lista.filter((producto) => {
       const coincideBusqueda = producto.nombre.toLowerCase().includes(busqueda.toLowerCase());
@@ -42,7 +43,6 @@ export default function Productos() {
     <div className="min-h-screen p-4 pb-24 bg-purple-50">
       <h1 className="mb-4 text-3xl font-bold text-center text-purple-800">Tienda Pet Link 🛍️</h1>
 
-      {/* Buscador y filtro */}
       <div className="flex flex-col items-center gap-3 mb-6 sm:flex-row">
         <input
           type="text"
@@ -94,7 +94,7 @@ export default function Productos() {
                         Ver producto
                       </button>
                       <button
-                        onClick={() => alert("Agregado al carrito")}
+                        onClick={() => addToCart(producto)}
                         className="py-1 text-white bg-green-500 rounded hover:bg-green-600"
                       >
                         Agregar al carrito
@@ -110,4 +110,3 @@ export default function Productos() {
     </div>
   );
 }
-
