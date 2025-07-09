@@ -11,7 +11,7 @@ import Profile from "./pages/Profile";
 import Scan from "./pages/Scan";
 import Adopciones from "./pages/Adopciones";
 import AdminPanel from "./pages/AdminPanel";
-import AdminBlog from "./pages/AdminBlog";  // <-- NUEVO import
+import AdminBlog from "./pages/Adminblog";  // <-- NUEVO import
 import Productos from "./pages/Productos";
 import CargarProducto from "./pages/CargarProductos";
 import ReportLostPets from "./components/ReportLostPets";
