@@ -10,7 +10,7 @@ import Profile from "./pages/Profile";
 // import Scan from "./pages/Scan"; // Comentado temporalmente
 // import Adopciones from "./pages/Adopciones"; // Comentado temporalmente
 import AdminPanel from "./pages/AdminPanel";
-import AdminBlog from "./pages/AdminBlog";
+import AdminBlog from "./pages/Adminblog";
 import Tiendas from "./pages/Tiendas";
 import TiendaDetalle from "./pages/TiendaDetalle";
 import CargarProducto from "./pages/CargarProductos";
