@@ -36,9 +36,7 @@ export default function AdministrarQR() {
       }
     };
 
-    fetchMascotas();
-    fetchCodigosQR();
-    setLoading(false);
+    Promise.all([fetchMascotas(), fetchCodigosQR()]).finally(() => setLoading(false));
   }, []);
 
   const handleAsignarQR = async () => {
@@ -54,6 +52,7 @@ export default function AdministrarQR() {
 
     if (error) {
       console.error("Error al asignar código QR:", error.message);
+      alert("Error al asignar código QR, intenta nuevamente.");
     } else {
       alert("Código QR asignado correctamente");
       setCodigoSeleccionado(null);
@@ -80,26 +79,29 @@ export default function AdministrarQR() {
   );
 
   return (
-    <div className="min-h-screen p-4 pb-24 bg-purple-50">
-      <h1 className="mb-4 text-3xl font-bold text-center text-purple-800">
+    <div className="min-h-screen p-6 pb-24 bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-gray-200">
+      <h1 className="mb-8 text-4xl font-extrabold text-center text-[#e94560] drop-shadow-lg">
         Asignar Código QR a Mascota
       </h1>
 
       {loading ? (
-        <p className="text-center text-gray-600">Cargando datos...</p>
+        <p className="text-center text-[#9f86c0] animate-pulse">Cargando datos...</p>
       ) : (
-        <div className="space-y-6">
+        <div className="max-w-4xl mx-auto space-y-8">
           {/* Selección de mascota */}
-          <div className="flex flex-col mb-6">
-            <label className="mb-2 text-lg font-semibold text-purple-700">
+          <div className="flex flex-col">
+            <label className="mb-3 text-lg font-semibold text-[#9f86c0]">
               Selecciona una mascota
             </label>
             <select
               value={mascotaSeleccionada || ""}
               onChange={(e) => setMascotaSeleccionada(e.target.value)}
-              className="p-2 border rounded"
+              className="p-3 bg-[#0f3460] border border-[#4a4e69] rounded-lg shadow-md text-gray-200
+                focus:outline-none focus:ring-2 focus:ring-[#e94560] transition"
             >
-              <option value="">Seleccionar mascota</option>
+              <option value="" disabled>
+                Seleccionar mascota
+              </option>
               {mascotas.map((mascota) => (
                 <option key={mascota.id} value={mascota.id}>
                   {mascota.nombre}
@@ -109,59 +111,73 @@ export default function AdministrarQR() {
           </div>
 
           {/* Selección de código QR */}
-          <div className="flex flex-col mb-6">
-            <label className="mb-2 text-lg font-semibold text-purple-700">
+          <div className="flex flex-col">
+            <label className="mb-3 text-lg font-semibold text-[#9f86c0]">
               Selecciona un código QR
             </label>
-            <select
-              value={codigoSeleccionado || ""}
-              onChange={(e) => setCodigoSeleccionado(e.target.value)}
-              className="p-2 border rounded"
-            >
-              <option value="">Seleccionar código QR</option>
-              {codigosDisponibles.map((codigo) => (
-                <option key={codigo.name} value={codigo.name}>
-                  {codigo.name}
+            {codigosDisponibles.length > 0 ? (
+              <select
+                value={codigoSeleccionado || ""}
+                onChange={(e) => setCodigoSeleccionado(e.target.value)}
+                className="p-3 bg-[#0f3460] border border-[#4a4e69] rounded-lg shadow-md text-gray-200
+                  focus:outline-none focus:ring-2 focus:ring-[#e94560] transition"
+              >
+                <option value="" disabled>
+                  Seleccionar código QR
                 </option>
-              ))}
-            </select>
+                {codigosDisponibles.map((codigo) => (
+                  <option key={codigo.name} value={codigo.name}>
+                    {codigo.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="font-semibold text-center text-[#fb7185]">
+                No hay códigos QR disponibles.
+              </p>
+            )}
           </div>
 
           {/* Botón para asignar */}
           <button
             onClick={handleAsignarQR}
-            className="px-6 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
             disabled={!mascotaSeleccionada || !codigoSeleccionado}
+            className="w-full py-3 mt-2 font-bold rounded-lg shadow-lg bg-[#e94560] hover:bg-[#d63447] disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             Asignar Código QR
           </button>
 
-          {/* Mostrar todos los códigos ya asignados con sus mascotas */}
-          <div className="mt-12">
-            <h2 className="mb-4 text-2xl font-bold text-purple-800">
+          {/* Mostrar códigos asignados */}
+          <section>
+            <h2 className="mb-6 text-3xl font-bold text-center text-[#9f86c0] drop-shadow-md">
               Códigos QR asignados
             </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-              {mascotasConQR.map((mascota) => (
-                <div
-                  key={mascota.id}
-                  className="p-4 bg-white rounded shadow"
-                >
-                  <h3 className="text-lg font-semibold text-purple-700">
-                    {mascota.nombre}
-                  </h3>
-                  <img
-                    src={`https://zcoekpdxfbnooopsrrec.supabase.co/storage/v1/object/public/productos/codigos-qr/${mascota.codigo_qr_url}`}
-                    alt={`QR de ${mascota.nombre}`}
-                    className="w-24 h-24 mt-2 rounded"
-                  />
-                  <p className="mt-2 text-sm text-gray-500">
-                    {mascota.codigo_qr_url}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+
+            {mascotasConQR.length === 0 ? (
+              <p className="text-center text-[#9f86c0]">No hay códigos asignados aún.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+                {mascotasConQR.map((mascota) => (
+                  <div
+                    key={mascota.id}
+                    className="flex flex-col items-center p-6 bg-[#16213e] border border-[#4a4e69] shadow-md rounded-xl"
+                  >
+                    <h3 className="mb-3 text-xl font-semibold text-[#e94560]">
+                      {mascota.nombre}
+                    </h3>
+                    <img
+                      src={`https://zcoekpdxfbnooopsrrec.supabase.co/storage/v1/object/public/productos/codigos-qr/${mascota.codigo_qr_url}`}
+                      alt={`QR de ${mascota.nombre}`}
+                      className="rounded-lg shadow-lg w-28 h-28"
+                    />
+                    <p className="max-w-full mt-3 text-sm text-center truncate text-[#9f86c0]">
+                      {mascota.codigo_qr_url}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       )}
     </div>

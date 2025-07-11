@@ -2,10 +2,9 @@ import React from 'react';
 import HeroSection from '../components/HeroSection';
 import FeaturedPets from '../components/FeaturedPets';
 import EsencialesCarousel from '../components/EsencialesCarousel';
-// import LostPetsMap from '../components/LostPetsMap';
-import PetSociety from '../components/PetSociety';
+import VapeCommunity from '../components/VapeCommunity';
 import SuccessStories from '../components/SuccessStories';
-import TrackingDevices from '../components/TrackingDevices';
+import TrackingDevices from './Merchandising';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
@@ -14,116 +13,61 @@ export default function Home() {
   const { isLoggedIn } = useAuth();
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-to-br from-green-100 via-blue-100 to-purple-100">
-      {/* Hero */}
-      <HeroSection onReportClick={() => navigate('/reportar-perdida')} />
+    <div className="flex items-start justify-center min-h-screen p-6 bg-very-dark-bg">
+      <div className="w-full max-w-4xl p-6 rounded-xl border-4 border-neon-pink shadow-[0_0_12px_2px_rgba(157,78,221,0.7)] bg-very-dark-bg font-poppins text-light-gray">
 
-      {/* Botón para escanear código QR */}
-      <section className="flex justify-center px-6 py-6">
-        <button
-          onClick={() => navigate('/scan')}
-          className="w-full max-w-xs px-6 py-4 text-lg font-semibold text-white transition bg-blue-600 rounded-full hover:bg-blue-700"
-          aria-label="Escanear código QR"
-          type="button"
-        >
-          Escanear código QR
-        </button>
-      </section>
-
-      {/* Botones de login y registro (si no está logueado) */}
-      {!isLoggedIn && (
-        <section className="flex justify-center gap-4 px-6 py-4 mb-8">
-          <button
-            onClick={() => navigate('/login')}
-            className="flex-1 max-w-xs px-5 py-3 text-lg font-semibold text-center text-white transition bg-green-600 rounded-full hover:bg-green-700"
-            type="button"
-          >
-            Iniciar sesión
-          </button>
-          <button
-            onClick={() => navigate('/register')}
-            className="flex-1 max-w-xs px-5 py-3 text-lg font-semibold text-center text-white transition bg-purple-600 rounded-full hover:bg-purple-700"
-            type="button"
-          >
-            Registrarse
-          </button>
-        </section>
-      )}
-
-      {/* Mascotas Destacadas - Resumen */}
-      <section className="px-6 py-8 bg-white shadow-md rounded-t-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-purple-800"></h2>
-          <button
-            onClick={() => navigate('/mascotas-destacadas')}
-            className="text-sm font-semibold text-blue-600 hover:underline"
-            type="button"
-          >
-            
-          </button>
+        {/* Hero con margen abajo para separar */}
+        <div className="mb-12">
+          <HeroSection onReportClick={() => navigate('/reportar-perdida')} />
         </div>
-        <FeaturedPets summary={true} maxItems={3} />
-      </section>
 
-      {/* Productos Esenciales - Resumen */}
-      <section className="px-6 py-8 mt-6 shadow-sm bg-gray-50 rounded-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-purple-800"></h2>
-          <button
-            onClick={() => navigate('/productos')}
-            className="text-sm font-semibold text-blue-600 hover:underline"
-            type="button"
-          >
-            
-          </button>
-        </div>
-        <EsencialesCarousel summary={true} maxItems={5} />
-      </section>
+        {/* Login / Registro si no está logueado, con margen abajo */}
+        {!isLoggedIn && (
+          <section className="flex justify-center gap-4 py-4 mb-12">
+            <button
+              onClick={() => navigate('/login')}
+              className="flex-1 max-w-xs px-5 py-3 text-lg font-semibold text-center rounded-full text-very-dark-bg bg-electric-blue shadow-[0_0_10px_2px_rgba(42,127,255,0.7)] hover:bg-violet-neon hover:shadow-[0_0_10px_4px_rgba(157,78,221,0.8)] focus:outline-none focus-visible:ring-4 focus-visible:ring-violet-neon active:scale-95 transition"
+              type="button"
+            >
+              Iniciar sesión
+            </button>
+            <button
+              onClick={() => navigate('/register')}
+              className="flex-1 max-w-xs px-5 py-3 text-lg font-semibold text-center rounded-full text-very-dark-bg bg-violet-neon shadow-[0_0_10px_2px_rgba(157,78,221,0.7)] hover:bg-electric-blue hover:shadow-[0_0_10px_4px_rgba(42,127,255,0.8)] focus:outline-none focus-visible:ring-4 focus-visible:ring-electric-blue active:scale-95 transition"
+              type="button"
+            >
+              Registrarse
+            </button>
+          </section>
+        )}
 
-      {/* Pet Society - Resumen */}
-      <section className="px-6 py-8 mt-6 bg-white shadow-sm rounded-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-purple-800"></h2>
-          <button
-            onClick={() => navigate('/pet-society')}
-            className="text-sm font-semibold text-blue-600 hover:underline"
-            type="button"
+        {/* Secciones resumen sin títulos ni botones */}
+        {[{
+          title: 'Productos Esenciales',
+          onClick: () => navigate('/productos'),
+          component: <EsencialesCarousel summary maxItems={5} />,
+        },{
+          title: 'VapeCommunity',
+          onClick: () => navigate('/vape-comunity'),
+          component: <VapeCommunity summary maxItems={3} />,
+        },{
+          title: 'Cambios de Vida',
+          onClick: () => navigate('/casos-exito'),
+          component: <SuccessStories summary maxItems={3} />,
+        },{
+          title: 'Dispositivos de Rastreo',
+          onClick: () => navigate('/dispositivos'),
+          component: <TrackingDevices summary maxItems={5} />,
+        }].map(({component}, index) => (
+          <section
+            key={index}
+            className="px-4 py-6 mb-6 shadow-md bg-light-gray/10 rounded-xl last:mb-12 last:rounded-b-xl"
           >
-            
-          </button>
-        </div>
-        <PetSociety summary={true} maxItems={3} />
-      </section>
+            {component}
+          </section>
+        ))}
 
-      {/* Casos de Éxito - Resumen */}
-      <section className="px-6 py-8 mt-6 shadow-md bg-gray-50 rounded-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-purple-800"></h2>
-          <button
-            onClick={() => navigate('/casos-exito')}
-            className="text-sm font-semibold text-blue-600 hover:underline"
-            type="button"
-          >
-            
-          </button>
-        </div>
-        <SuccessStories summary={true} maxItems={3} />
-      </section>
-
-      {/* Dispositivos de Rastreo - Resumen */}
-      <section className="px-6 py-8 mt-6 mb-12 bg-white shadow-sm rounded-b-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-purple-800"></h2>
-          <button
-            onClick={() => navigate('/dispositivos')}
-            className="text-sm font-semibold text-blue-600 hover:underline"
-            type="button"
-          >
-           
-          </button>
-        </div>
-        <TrackingDevices summary={true} maxItems={5} />
-      </section>
+      </div>
     </div>
   );
 }

@@ -28,37 +28,37 @@ export default function LostPets() {
   }, []);
 
   return (
-    <div className="min-h-screen px-4 py-6 bg-cream">
-      <h1 className="mb-6 text-3xl font-bold text-center text-brown-800">
+    <div className="min-h-screen px-4 py-6 bg-neutral-900">
+      <h1 className="mb-6 text-3xl font-bold text-center text-violet-400 drop-shadow-lg">
         Mascotas Perdidas
       </h1>
 
-      {loading && <p className="text-lg text-center text-gray-600">Cargando...</p>}
+      {loading && <p className="text-lg text-center text-violet-300">Cargando...</p>}
       {error && <p className="text-center text-red-600">{error}</p>}
 
       <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {mascotasPerdidas.map((mascota) => (
           <div
             key={mascota.id}
-            className="flex flex-col items-center p-4 text-center bg-white shadow rounded-xl"
+            className="flex flex-col items-center p-4 text-center transition border shadow-lg bg-neutral-800 rounded-xl border-violet-600 hover:shadow-violet-500/50"
           >
             <img
-              src={mascota.foto_url || "/placeholder.jpg"}
+              src={mascota.foto_url || "/placeholder-dark.png"}
               alt={mascota.nombre}
-              className="object-cover w-full h-48 mb-3 rounded-lg"
+              className="object-cover w-full h-48 mb-3 border rounded-lg border-violet-500"
             />
-            <h2 className="text-xl font-semibold">{mascota.nombre}</h2>
-            <p className="text-sm text-gray-700 capitalize">
+            <h2 className="text-xl font-semibold text-violet-300">{mascota.nombre}</h2>
+            <p className="text-sm capitalize text-violet-400">
               {mascota.especie} - {mascota.raza || "Sin raza"}
             </p>
-            <p className="text-sm text-gray-500">Provincia: {mascota.provincia}</p>
+            <p className="text-sm text-violet-500">Provincia: {mascota.provincia}</p>
 
             {mascota.telefono && (
               <a
                 href={`https://wa.me/54${mascota.telefono}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center mt-3 text-sm text-green-600 hover:underline"
+                className="inline-flex items-center mt-3 text-sm text-green-400 transition hover:text-green-600 hover:underline"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +76,7 @@ export default function LostPets() {
       </div>
 
       {!loading && mascotasPerdidas.length === 0 && (
-        <p className="mt-10 text-center text-gray-600">
+        <p className="mt-10 text-center text-violet-300">
           No se encontraron mascotas perdidas por el momento 🐾
         </p>
       )}

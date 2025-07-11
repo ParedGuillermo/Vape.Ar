@@ -35,7 +35,7 @@ export default function Eventos() {
   return (
     <div className="max-w-4xl p-6 mx-auto bg-white rounded-lg shadow-lg">
       <h1 className="mb-6 text-3xl font-bold text-center text-purple-700">
-        Eventos y Encuentros Pet Link
+        Eventos y Encuentros VAPE.AR
       </h1>
 
       <h2 className="text-2xl font-semibold text-gray-800">

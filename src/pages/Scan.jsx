@@ -74,30 +74,30 @@ export default function Scan() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-purple-50">
-      <h1 className="mb-4 text-2xl font-bold text-purple-800">Escanear Código QR</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 text-white bg-neutral-900">
+      <h1 className="mb-4 text-2xl font-bold text-violet-400">Escanear Código QR</h1>
 
       {!isScanning ? (
         <button
           onClick={() => setIsScanning(true)}
-          className="px-6 py-3 mb-4 font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+          className="px-6 py-3 mb-4 font-semibold text-white transition rounded-lg bg-violet-700 hover:bg-violet-800"
         >
           Iniciar escaneo
         </button>
       ) : (
-        <div className="w-full max-w-md p-4 mb-4 space-y-4 bg-white rounded-lg shadow">
+        <div className="w-full max-w-md p-4 mb-4 space-y-4 border rounded-lg shadow-lg bg-neutral-800 border-violet-600">
           <button
             onClick={toggleCamera}
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded hover:bg-gray-700"
+            className="w-full px-4 py-2 text-sm font-medium text-white transition rounded bg-violet-600 hover:bg-violet-700"
           >
             Cambiar cámara ({facingMode === "environment" ? "Trasera" : "Frontal"})
           </button>
 
-          <div className="relative w-full overflow-hidden bg-black rounded aspect-square">
+          <div className="relative w-full overflow-hidden bg-black border-4 rounded aspect-square border-violet-700">
             {/* Spinner animado de carga */}
             {loading && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black opacity-75">
-                <div className="w-24 h-24 border-4 border-t-4 border-white rounded-full animate-spin"></div>
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black bg-opacity-70">
+                <div className="w-24 h-24 border-4 border-t-4 rounded-full border-violet-400 animate-spin"></div>
               </div>
             )}
 
@@ -107,7 +107,7 @@ export default function Scan() {
               onError={handleError}
               className="w-full h-full"
               constraints={{ video: { facingMode } }}
-              onLoad={() => setLoading(false)} // Desactivar loading cuando la cámara esté lista
+              onLoad={() => setLoading(false)}
             />
           </div>
         </div>
@@ -115,8 +115,8 @@ export default function Scan() {
 
       {/* Datos de la mascota */}
       {mascota && (
-        <div className="w-full max-w-md p-4 space-y-2 text-left bg-white rounded-lg shadow">
-          <h2 className="text-xl font-bold text-purple-800">🐾 Mascota</h2>
+        <div className="w-full max-w-md p-4 mt-4 space-y-2 text-left border rounded-lg shadow-lg bg-neutral-800 border-violet-600">
+          <h2 className="text-xl font-bold text-violet-400">🐾 Mascota</h2>
           <p><strong>Nombre:</strong> {mascota.nombre}</p>
           <p><strong>Especie:</strong> {mascota.especie}</p>
           <p><strong>Raza:</strong> {mascota.raza}</p>
@@ -131,7 +131,7 @@ export default function Scan() {
             <img
               src={mascota.foto_url}
               alt={`Foto de ${mascota.nombre}`}
-              className="w-full mt-2 rounded-lg"
+              className="w-full mt-2 border rounded-lg border-violet-600"
             />
           )}
         </div>
@@ -139,8 +139,8 @@ export default function Scan() {
 
       {/* Datos del dueño */}
       {dueño && (
-        <div className="w-full max-w-md p-4 mt-4 space-y-2 text-left bg-white rounded-lg shadow">
-          <h2 className="text-xl font-bold text-purple-800">👤 Dueño</h2>
+        <div className="w-full max-w-md p-4 mt-4 space-y-2 text-left border rounded-lg shadow-lg bg-neutral-800 border-violet-600">
+          <h2 className="text-xl font-bold text-violet-400">👤 Dueño</h2>
           <p><strong>Nombre:</strong> {dueño.nombre} {dueño.apellido}</p>
           {dueño.apodo && <p><strong>Apodo:</strong> {dueño.apodo}</p>}
           <p><strong>Teléfono:</strong> {dueño.telefono}</p>
@@ -150,7 +150,7 @@ export default function Scan() {
             <img
               src={dueño.avatar_url}
               alt={`Avatar de ${dueño.nombre}`}
-              className="w-24 h-24 mt-2 rounded-full"
+              className="w-24 h-24 mt-2 border-2 rounded-full border-violet-600"
             />
           )}
         </div>

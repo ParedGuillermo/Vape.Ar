@@ -25,15 +25,15 @@ export default function Adopciones() {
   }, []);
 
   return (
-    <div className="min-h-screen p-6 pb-24 bg-purple-50">
-      <h1 className="mb-6 text-3xl font-bold text-center text-purple-800">
+    <div className="min-h-screen p-6 pb-24 bg-neutral-900">
+      <h1 className="mb-6 text-3xl font-bold text-center text-violet-400 drop-shadow-lg">
         Mascotas en Adopción 🐾
       </h1>
 
       {loading ? (
-        <p className="text-center text-gray-600">Cargando mascotas...</p>
+        <p className="text-center text-violet-300">Cargando mascotas...</p>
       ) : adopciones.length === 0 ? (
-        <p className="text-center text-gray-600">
+        <p className="text-center text-violet-400">
           No hay mascotas disponibles en este momento.
         </p>
       ) : (
@@ -41,27 +41,26 @@ export default function Adopciones() {
           {adopciones.map((mascota) => (
             <div
               key={mascota.id}
-              className="flex flex-col items-center p-4 bg-white rounded-lg shadow"
+              className="flex flex-col items-center p-4 transition border rounded-lg shadow-lg bg-neutral-800 border-violet-600 hover:shadow-violet-500/50"
             >
               <img
-                src={mascota.foto_url || "https://placehold.co/300x300?text=Mascota"}
+                src={mascota.foto_url || "/placeholder-dark.png"}
                 alt={mascota.nombre}
-                className="object-cover w-40 h-40 mb-4 rounded-full"
+                className="object-cover w-40 h-40 mb-4 border rounded-full border-violet-500"
               />
-              <h2 className="mb-1 text-xl font-semibold text-purple-700">
+              <h2 className="mb-1 text-xl font-semibold text-violet-300">
                 {mascota.nombre}
               </h2>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-violet-400">
                 {mascota.especie} - {mascota.raza || "Sin raza"}
               </p>
-              <p className="text-sm text-gray-700">{mascota.edad} años</p>
-              <p className="mt-2 text-sm text-center text-gray-600">
+              <p className="text-sm text-violet-400">{mascota.edad} años</p>
+              <p className="mt-2 text-sm text-center text-violet-300">
                 {mascota.descripcion}
               </p>
-              <p className="mt-1 text-sm text-gray-500">📍 {mascota.provincia}</p>
-              <p className="text-sm text-gray-500">📞 {mascota.telefono}</p>
+              <p className="mt-1 text-sm text-violet-500">📍 {mascota.provincia}</p>
+              <p className="text-sm text-violet-500">📞 {mascota.telefono}</p>
 
-              {/* Botón contacto WhatsApp */}
               {mascota.telefono && (
                 <a
                   href={`https://wa.me/54${mascota.telefono}`}

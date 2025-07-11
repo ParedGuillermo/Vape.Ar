@@ -14,7 +14,7 @@ If you are developing a production application, we recommend using TypeScript wi
 
 
 
-# Proyecto Pet Link - Resumen y Progreso
+# Proyecto VAPE.AR - Resumen y Progreso
 
 ## Funcionalidades implementadas
 

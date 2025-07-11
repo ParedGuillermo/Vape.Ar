@@ -67,7 +67,8 @@ export default function CargarProducto() {
 
         setUploadingImage(false);
 
-        if (uploadError) throw new Error("Error al subir imagen: " + uploadError.message);
+        if (uploadError)
+          throw new Error("Error al subir imagen: " + uploadError.message);
 
         const { data } = supabase.storage
           .from("productos")
@@ -97,7 +98,8 @@ export default function CargarProducto() {
           .update(producto)
           .eq("id", editando);
 
-        if (updateError) throw new Error("Error al actualizar: " + updateError.message);
+        if (updateError)
+          throw new Error("Error al actualizar: " + updateError.message);
         setSuccessMsg("Producto actualizado correctamente.");
       } else {
         const { error: insertError } = await supabase.from("productos").insert(producto);
@@ -145,34 +147,87 @@ export default function CargarProducto() {
   });
 
   return (
-    <div className="max-w-4xl p-6 mx-auto mt-6 bg-white rounded shadow">
-      <h2 className="mb-4 text-2xl font-bold">
+    <div className="max-w-4xl p-6 mx-auto mt-6 text-gray-200 shadow-lg bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 rounded-xl">
+      <h2 className="mb-6 text-3xl font-extrabold text-center text-violet-400">
         {editando ? "Editar Producto" : "Cargar Producto"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="nombre" placeholder="Nombre *" value={form.nombre} onChange={handleChange} className="w-full p-2 border rounded" required />
-        <textarea name="descripcion" placeholder="Descripción" value={form.descripcion} onChange={handleChange} className="w-full p-2 border rounded" />
-        <input type="number" name="precio" placeholder="Precio" value={form.precio} onChange={handleChange} className="w-full p-2 border rounded" min="0" step="0.01" />
-        <input type="number" name="stock" placeholder="Stock" value={form.stock} onChange={handleChange} className="w-full p-2 border rounded" min="0" />
-        <input type="text" name="categoria" placeholder="Categoría" value={form.categoria} onChange={handleChange} className="w-full p-2 border rounded" />
-        <select name="estado" value={form.estado} onChange={handleChange} className="w-full p-2 border rounded">
+        <input
+          type="text"
+          name="nombre"
+          placeholder="Nombre *"
+          value={form.nombre}
+          onChange={handleChange}
+          className="w-full p-3 text-gray-100 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+          required
+        />
+        <textarea
+          name="descripcion"
+          placeholder="Descripción"
+          value={form.descripcion}
+          onChange={handleChange}
+          className="w-full p-3 text-gray-100 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+        />
+        <input
+          type="number"
+          name="precio"
+          placeholder="Precio"
+          value={form.precio}
+          onChange={handleChange}
+          min="0"
+          step="0.01"
+          className="w-full p-3 text-gray-100 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+        />
+        <input
+          type="number"
+          name="stock"
+          placeholder="Stock"
+          value={form.stock}
+          onChange={handleChange}
+          min="0"
+          className="w-full p-3 text-gray-100 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+        />
+        <input
+          type="text"
+          name="categoria"
+          placeholder="Categoría"
+          value={form.categoria}
+          onChange={handleChange}
+          className="w-full p-3 text-gray-100 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+        />
+        <select
+          name="estado"
+          value={form.estado}
+          onChange={handleChange}
+          className="w-full p-3 text-gray-100 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+        >
           {estados.map((e) => (
-            <option key={e} value={e}>
+            <option key={e} value={e} className="text-gray-100 bg-purple-900">
               {e.charAt(0).toUpperCase() + e.slice(1)}
             </option>
           ))}
         </select>
 
-        <input type="file" name="foto" accept="image/*" onChange={handleChange} className="w-full" />
+        <input
+          type="file"
+          name="foto"
+          accept="image/*"
+          onChange={handleChange}
+          className="w-full text-gray-300"
+        />
 
-        {uploadingImage && <p className="text-blue-600">Subiendo imagen...</p>}
-        {error && <p className="text-red-600">{error}</p>}
-        {successMsg && <p className="text-green-600">{successMsg}</p>}
+        {uploadingImage && <p className="text-violet-400">Subiendo imagen...</p>}
+        {error && <p className="font-semibold text-red-500">{error}</p>}
+        {successMsg && <p className="font-semibold text-green-400">{successMsg}</p>}
 
-        <div className="flex gap-2">
-          <button type="submit" disabled={loading || uploadingImage} className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
-            {loading ? "Guardando..." : editando ? "Actualizar" : "Guardar Producto"}
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            disabled={loading || uploadingImage}
+            className="flex-1 px-6 py-3 font-semibold text-black rounded-lg bg-violet-400 hover:bg-violet-500 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? (editando ? "Actualizando..." : "Guardando...") : editando ? "Actualizar" : "Guardar Producto"}
           </button>
           {editando && (
             <button
@@ -189,7 +244,7 @@ export default function CargarProducto() {
                   foto: null,
                 });
               }}
-              className="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
+              className="flex-1 px-6 py-3 font-semibold text-black bg-gray-400 rounded-lg hover:bg-gray-500"
             >
               Cancelar
             </button>
@@ -197,55 +252,87 @@ export default function CargarProducto() {
         </div>
       </form>
 
-      <hr className="my-6" />
+      <hr className="my-8 border-violet-700" />
 
-      <h3 className="mb-4 text-xl font-semibold">Productos existentes</h3>
+      <h3 className="mb-6 text-2xl font-semibold text-violet-300">Productos existentes</h3>
 
       {/* Filtros */}
-      <div className="flex flex-col gap-4 mb-6 md:flex-row">
+      <div className="flex flex-col gap-4 mb-8 md:flex-row">
         <input
           type="text"
           placeholder="🔍 Buscar por nombre..."
           onChange={(e) => setBusqueda(e.target.value)}
-          className="w-full p-2 border rounded md:w-1/3"
+          className="w-full p-3 text-gray-200 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400 md:w-1/3"
         />
-        <select onChange={(e) => setFiltroCategoria(e.target.value)} className="w-full p-2 border rounded md:w-1/3">
-          <option value="">Todas las categorías</option>
+        <select
+          onChange={(e) => setFiltroCategoria(e.target.value)}
+          className="w-full p-3 text-gray-200 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400 md:w-1/3"
+        >
+          <option value="" className="text-gray-200 bg-purple-900">
+            Todas las categorías
+          </option>
           {[...new Set(productos.map((p) => p.categoria).filter(Boolean))].map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
+            <option key={cat} value={cat} className="text-gray-200 bg-purple-900">
+              {cat}
+            </option>
           ))}
         </select>
-        <select onChange={(e) => setFiltroEstado(e.target.value)} className="w-full p-2 border rounded md:w-1/3">
-          <option value="">Todos los estados</option>
+        <select
+          onChange={(e) => setFiltroEstado(e.target.value)}
+          className="w-full p-3 text-gray-200 bg-purple-900 border rounded-md border-violet-600 placeholder-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-400 md:w-1/3"
+        >
+          <option value="" className="text-gray-200 bg-purple-900">
+            Todos los estados
+          </option>
           {estados.map((e) => (
-            <option key={e} value={e}>{e.charAt(0).toUpperCase() + e.slice(1)}</option>
+            <option key={e} value={e} className="text-gray-200 bg-purple-900">
+              {e.charAt(0).toUpperCase() + e.slice(1)}
+            </option>
           ))}
         </select>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         {productosFiltrados.map((p) => (
-          <div key={p.id} className="flex gap-4 p-4 border rounded">
+          <div
+            key={p.id}
+            className="flex flex-col gap-4 p-4 bg-purple-900 border rounded-lg shadow-md sm:flex-row border-violet-700"
+          >
             {p.foto_url && (
-              <img src={p.foto_url} alt={p.nombre} className="object-cover w-24 h-24 rounded" />
+              <img
+                src={p.foto_url}
+                alt={p.nombre}
+                className="self-center object-cover w-full h-32 max-w-xs rounded-md sm:self-start"
+              />
             )}
-            <div className="flex-1">
-              <h4 className="text-lg font-bold">{p.nombre}</h4>
-              <p className="text-sm text-gray-600">{p.descripcion}</p>
+            <div className="flex-1 text-gray-200">
+              <h4 className="text-xl font-bold text-violet-300">{p.nombre}</h4>
+              <p className="mb-2 text-sm text-violet-200">{p.descripcion}</p>
               <p className="text-sm">💰 ${p.precio}</p>
               <p className="text-sm">📦 Stock: {p.stock}</p>
               <p className="text-sm">📂 Categoría: {p.categoria}</p>
               <p className="text-sm">📌 Estado: {p.estado}</p>
 
-              <div className="flex gap-2 mt-2">
-                <button onClick={() => handleEdit(p)} className="px-3 py-1 text-white bg-yellow-500 rounded">Editar</button>
-                <button onClick={() => handleDelete(p.id)} className="px-3 py-1 text-white bg-red-600 rounded">Eliminar</button>
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => handleEdit(p)}
+                  className="px-4 py-2 font-semibold text-black transition bg-yellow-500 rounded hover:bg-yellow-400"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(p.id)}
+                  className="px-4 py-2 font-semibold transition bg-red-600 rounded hover:bg-red-500"
+                >
+                  Eliminar
+                </button>
               </div>
             </div>
           </div>
         ))}
+
         {productosFiltrados.length === 0 && (
-          <p className="text-center text-gray-500">No hay productos que coincidan.</p>
+          <p className="text-center text-violet-400">No hay productos que coincidan.</p>
         )}
       </div>
     </div>

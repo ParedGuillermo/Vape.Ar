@@ -1,11 +1,44 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}"
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'dark-bg': '#1E1E2F',
+        'very-dark-bg': '#12131A',
+        'electric-blue': '#2A7FFF',
+        'violet-neon': '#9D4EDD',
+        'light-gray': '#B0B3C6',
+
+        // Colores neón personalizados
+        'neon-pink': '#FF49DB',
+        'neon-cyan': '#00FFF7',
+      },
+      boxShadow: {
+        neon: '0 0 8px #FF49DB, 0 0 15px #FF49DB, 0 0 20px #FF49DB',
+        'neon-cyan': '0 0 8px #00FFF7, 0 0 15px #00FFF7, 0 0 20px #00FFF7',
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
+      },
+      dropShadow: {
+        'neon-pink': '0 0 5px #FF49DB',
+        'neon-cyan': '0 0 5px #00FFF7',
+      },
+      fontSize: {
+        base: '0.875rem',  // 14px en vez de 16px
+        sm: '0.75rem',     // 12px
+        lg: '1rem',        // 16px (antes 1.125rem)
+        xl: '1.125rem',    // 18px
+      },
+    },
+    screens: {
+      mobile: {'max': '480px'},
+      tablet: {'min': '481px', 'max': '768px'},
+    },
   },
   plugins: [],
-}
+};
