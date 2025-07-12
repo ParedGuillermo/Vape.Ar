@@ -52,6 +52,13 @@ export default function TiendaDetalle() {
     return <div className="text-center">Tienda no encontrada.</div>;
   }
 
+  const sendWhatsAppMessage = (articuloTitulo) => {
+    const telefono = tienda.telefono; // Asumiendo que el teléfono está guardado en la tienda
+    const mensaje = `Hola, soy usuario de VAPE.AR y estoy interesado en el producto: ${articuloTitulo}. ¿Puedes brindarme más detalles?`;
+    const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, "_blank");
+  };
+
   return (
     <div className="min-h-screen px-6 py-8 pb-16 bg-very-dark-bg text-violet-neon font-poppins"> {/* Agregado el padding-bottom */}
       <h1 className="mb-8 text-3xl font-extrabold text-center text-electric-blue drop-shadow-neon-blue">
@@ -96,9 +103,9 @@ export default function TiendaDetalle() {
               <p className="mb-2 text-sm text-violet-300">Precio: ${articulo.precio}</p>
               <button
                 className="px-4 py-2 mt-auto text-white rounded bg-violet-600 hover:bg-violet-700"
-                onClick={() => alert(`Pedido de ${articulo.titulo} realizado`)}
+                onClick={() => sendWhatsAppMessage(articulo.titulo)} // Usar la función para enviar mensaje
               >
-                Comprar
+                Contactar vía WhatsApp
               </button>
             </div>
           ))}
