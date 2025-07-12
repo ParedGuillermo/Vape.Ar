@@ -1,9 +1,12 @@
+/* Primero, importa las fuentes o cualquier otro archivo CSS necesario */
+@import "@fontsource/inter"; /* Debe ir antes de cualquier otra regla */
+
+/* Luego, importa las reglas de Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "@fontsource/inter";
-
+/* Tus reglas personalizadas van después */
 html, body {
   @apply w-full min-h-screen p-0 m-0 font-sans text-white bg-black;
 }

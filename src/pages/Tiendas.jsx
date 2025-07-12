@@ -1,32 +1,44 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-
-const tiendasSimuladas = [
-  {
-    id: 1,
-    nombre: "Vape Store CABA",
-    descripcion: "Tu tienda de vapeo en Buenos Aires, con los mejores precios y marcas.",
-    logo_url: "https://i.ibb.co/5cDmyQw/vapestore-logo.png",
-    link_externo: "https://www.instagram.com/vapestorecaba/",
-  },
-  {
-    id: 2,
-    nombre: "Cloud Vapers",
-    descripcion: "Especialistas en líquidos y dispositivos para vapeo en Argentina.",
-    logo_url: "https://i.ibb.co/DGsdYQk/cloudvapers-logo.png",
-    link_externo: "https://cloudvapers.com.ar",
-  },
-  {
-    id: 3,
-    nombre: "Vape Shop Rosario",
-    descripcion: "Tu punto de referencia para vapeo en Rosario. Calidad y atención.",
-    logo_url: "https://i.ibb.co/k2XmRM2/vapeshop-logo.png",
-    link_externo: "https://www.facebook.com/vapeshoprosario",
-  },
-];
+import { supabase } from "../supabaseClient";
 
 export default function Tiendas() {
   const navigate = useNavigate();
+  const [tiendas, setTiendas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [provinciaFilter, setProvinciaFilter] = useState("");
+
+  useEffect(() => {
+    async function fetchTiendas() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("usuarios")
+        .select("*")
+        .eq("rol", "vendedor");
+      if (error) {
+        console.error(error);
+      } else {
+        setTiendas(data);
+      }
+      setLoading(false);
+    }
+    fetchTiendas();
+  }, []);
+
+  const provincias = useMemo(() => {
+    const provs = tiendas
+      .map((t) => t.provincia)
+      .filter((p) => p && p.trim() !== "");
+    return Array.from(new Set(provs));
+  }, [tiendas]);
+
+  const tiendasFiltradas = useMemo(() => {
+    if (!provinciaFilter) return tiendas;
+    return tiendas.filter((t) => t.provincia === provinciaFilter);
+  }, [tiendas, provinciaFilter]);
+
+  if (loading) return <div className="p-4 text-center">Cargando tiendas...</div>;
 
   return (
     <div className="min-h-screen px-6 py-8 bg-very-dark-bg text-violet-neon font-poppins">
@@ -34,25 +46,55 @@ export default function Tiendas() {
         Tiendas Colaboradoras 🛍️
       </h1>
 
-      <div className="grid max-w-4xl gap-6 mx-auto md:grid-cols-2">
-        {tiendasSimuladas.map(({ id, nombre, descripcion, logo_url }) => (
+      {/* Filtro por provincia */}
+      <div className="max-w-4xl mx-auto mb-8">
+        <select
+          value={provinciaFilter}
+          onChange={(e) => setProvinciaFilter(e.target.value)}
+          className="w-full max-w-xs px-4 py-2 text-black rounded"
+        >
+          <option value="">Todas las provincias</option>
+          {provincias.map((prov) => (
+            <option key={prov} value={prov}>
+              {prov}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="max-w-4xl mx-auto space-y-6">
+        {tiendasFiltradas.length === 0 && <p>No hay tiendas registradas aún.</p>}
+
+        {tiendasFiltradas.map(({ id, nombre_local, nombre, provincia, ciudad, avatar_url }) => (
           <div
             key={id}
-            className="flex flex-col items-center p-6 transition-colors border rounded-lg cursor-pointer bg-dark-bg shadow-neon-violet border-violet-neon hover:bg-violet-neon hover:text-dark-bg hover:shadow-neon-purple"
+            className="flex items-center p-6 border rounded-lg cursor-pointer bg-dark-bg shadow-neon-violet border-violet-neon hover:bg-violet-neon hover:text-dark-bg hover:shadow-neon-purple"
+            onClick={() => navigate(`/tiendas/${id}`)} // Correcto para la navegación
           >
             <img
-              src={logo_url}
-              alt={nombre}
-              className="object-contain w-24 h-24 mb-4 rounded-full"
+              src={
+                avatar_url ||
+                "https://via.placeholder.com/128?text=Logo"
+              }
+              alt={nombre_local || nombre}
+              className="object-contain w-32 h-32 mr-6 border-4 rounded-full shadow-lg border-violet-500"
             />
-            <h2 className="mb-2 text-xl font-semibold text-center">{nombre}</h2>
-            <p className="text-sm text-center">{descripcion}</p>
-            <button
-              className="px-4 py-2 mt-4 transition rounded text-dark-bg bg-violet-neon hover:bg-violet-700"
-              onClick={() => navigate(`/tiendas/${id}`)}
-            >
-              Visitar Tienda
-            </button>
+            <div className="flex flex-col flex-grow">
+              <h2 className="mb-2 text-xl font-semibold">{nombre_local || nombre}</h2>
+              <p className="mb-4 text-sm text-violet-300">
+                {provincia || "Provincia no disponible"}
+                {ciudad ? `, ${ciudad}` : ""}
+              </p>
+              <button
+                className="self-start px-4 py-2 mt-auto transition rounded text-dark-bg bg-violet-neon hover:bg-violet-700"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/tiendas/${id}`); // Evita que se dispare el evento onClick padre
+                }}
+              >
+                Visitar Tienda
+              </button>
+            </div>
           </div>
         ))}
       </div>

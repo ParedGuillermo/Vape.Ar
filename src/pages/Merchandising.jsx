@@ -16,7 +16,7 @@ const Merchandising = () => (
           Estilo urbano con diseños únicos para la comunidad vaper. Alta calidad y comodidad.
         </p>
         <img
-          src="https://zcoekpdxfbnooopsrrec.supabase.co/storage/v1/object/public/productos/merch/gorra-vapear.jpg"
+          src="https://cvzhpgstiuclkavfidpu.supabase.co/storage/v1/object/public/avatar/gorra-vapear.jpg"
           alt="Gorra y remera con logo de VAPE.AR"
           className="object-cover mx-auto border-4 shadow-md rounded-xl w-52 h-52 border-violet-500"
         />
@@ -41,7 +41,7 @@ const Merchandising = () => (
           Próximamente: pines, stickers, bolsos y más artículos coleccionables para mostrar tu estilo vaper.
         </p>
         <img
-          src="https://zcoekpdxfbnooopsrrec.supabase.co/storage/v1/object/public/productos/merch/pines-vapear.jpg"
+          src="https://cvzhpgstiuclkavfidpu.supabase.co/storage/v1/object/public/avatar/pines-vapear.jpg"
           alt="Pines y accesorios VAPE.AR"
           className="object-cover mx-auto border-4 shadow-md rounded-xl w-52 h-52 border-violet-500"
         />

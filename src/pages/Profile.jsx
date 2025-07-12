@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
-import ModalRegistrarMascota from "../components/ModalRegistrarMascota";
+import ModalRegistrarArticulo from "../components/ModalRegistrarArticulo";
+import ModalEditarArticulo from "../components/ModalEditarArticulo";
 import AvatarSelector from "../components/AvatarSelector";
 
 export default function Profile() {
@@ -10,70 +11,58 @@ export default function Profile() {
   const navigate = useNavigate();
 
   const [profileData, setProfileData] = useState(null);
-  const [mascotas, setMascotas] = useState([]);
+  const [articulos, setArticulos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-
+  const [editModalArticulo, setEditModalArticulo] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     nombre: "",
-    apellido: "",
-    apodo: "",
+    correo: "",
     telefono: "",
-    avatar_url: "",
+    rol: "usuario",
+    nombre_local: "",
     provincia: "",
+    ciudad: "",
+    avatar_url: "",
   });
 
-  const fetchProfileAndMascotas = async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
-
+  const fetchProfileAndArticulos = async () => {
+    if (!user) return setLoading(false);
     setLoading(true);
 
     const { data: profile, error: profileError } = await supabase
       .from("usuarios")
       .select("*")
-      .eq("correo", user.email)
+      .eq("id", user.id)
       .single();
 
-    if (profileError) {
-      console.error("Error al obtener perfil:", profileError.message);
-      setProfileData(null);
-      setMascotas([]);
-      setLoading(false);
-      return;
-    }
+    if (profileError) return setLoading(false);
 
     setProfileData(profile);
-
     setFormData({
       nombre: profile.nombre || "",
-      apellido: profile.apellido || "",
-      apodo: profile.apodo || "",
+      correo: profile.correo || "",
       telefono: profile.telefono || "",
-      avatar_url: profile.avatar_url || "",
+      rol: profile.rol || "usuario",
+      nombre_local: profile.nombre_local || "",
       provincia: profile.provincia || "",
+      ciudad: profile.ciudad || "",
+      avatar_url: profile.avatar_url || "",
     });
 
-    const { data: mascotasData, error: mascotasError } = await supabase
-      .from("mascotas")
+    const { data: articulosData } = await supabase
+      .from("articulos")
       .select("*")
-      .eq("usuario_id", profile.id);
+      .eq("autor_id", user.id);
 
-    if (mascotasError) {
-      console.error("Error al obtener mascotas:", mascotasError.message);
-      setMascotas([]);
-    } else {
-      setMascotas(mascotasData);
-    }
-
+    setArticulos(articulosData || []);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchProfileAndMascotas();
+    fetchProfileAndArticulos();
   }, [user]);
 
   const handleLogout = async () => {
@@ -86,168 +75,192 @@ export default function Profile() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingImage(true);
+
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${user.id}_${Date.now()}.${fileExt}`;
+    const filePath = `avatars/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      setUploadingImage(false);
+      alert("Error al subir la imagen");
+      return;
+    }
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+    const publicUrl = data.publicUrl;
+
+    await supabase
+      .from("usuarios")
+      .update({ avatar_url: publicUrl })
+      .eq("id", user.id);
+
+    fetchProfileAndArticulos();
+    setUploadingImage(false);
+  };
+
   const handleSave = async () => {
     setLoading(true);
-    const { error } = await supabase
-      .from("usuarios")
-      .update(formData)
-      .eq("id", profileData.id);
+    const { nombre, telefono, nombre_local, provincia, ciudad, avatar_url } = formData;
 
-    if (error) {
-      alert("Error al actualizar perfil: " + error.message);
-    } else {
-      setEditing(false);
-      fetchProfileAndMascotas();
-    }
+    await supabase
+      .from("usuarios")
+      .update({ nombre, telefono, nombre_local, provincia, ciudad, avatar_url })
+      .eq("id", user.id);
+
+    setEditing(false);
+    fetchProfileAndArticulos();
     setLoading(false);
   };
 
   const handleCancel = () => {
+    if (!profileData) return;
     setFormData({
       nombre: profileData.nombre || "",
-      apellido: profileData.apellido || "",
-      apodo: profileData.apodo || "",
+      correo: profileData.correo || "",
       telefono: profileData.telefono || "",
-      avatar_url: profileData.avatar_url || "",
+      rol: profileData.rol || "usuario",
+      nombre_local: profileData.nombre_local || "",
       provincia: profileData.provincia || "",
+      ciudad: profileData.ciudad || "",
+      avatar_url: profileData.avatar_url || "",
     });
     setEditing(false);
   };
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen p-6 bg-neutral-900 text-violet-400">
-        <p>Cargando perfil y mascotas...</p>
+      <div className="min-h-screen p-6 text-center text-violet-400 bg-neutral-900">
+        Cargando...
       </div>
     );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen p-6 bg-neutral-900 text-violet-400">
-        <p>No estás autenticado. Por favor, inicia sesión.</p>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex flex-col items-center min-h-screen p-6 text-white bg-neutral-900">
+    <div className="flex flex-col items-center min-h-screen p-6 pb-16 text-white bg-neutral-900">
       <h2 className="mb-6 text-3xl font-semibold text-violet-400">Perfil de usuario</h2>
 
       <div className="w-full max-w-md p-6 mb-10 border rounded-lg shadow-lg bg-neutral-800 border-violet-600">
         {editing ? (
           <>
-            <label className="block mb-2 font-semibold text-violet-300">
-              Nombre
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                className="w-full p-2 mt-1 text-white border rounded bg-neutral-900 border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
-              />
-            </label>
-
-            <label className="block mb-2 font-semibold text-violet-300">
-              Apellido
-              <input
-                type="text"
-                name="apellido"
-                value={formData.apellido}
-                onChange={handleChange}
-                className="w-full p-2 mt-1 text-white border rounded bg-neutral-900 border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
-              />
-            </label>
-
-            <label className="block mb-2 font-semibold text-violet-300">
-              Apodo
-              <input
-                type="text"
-                name="apodo"
-                value={formData.apodo}
-                onChange={handleChange}
-                className="w-full p-2 mt-1 text-white border rounded bg-neutral-900 border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
-              />
-            </label>
-
-            <label className="block mb-2 font-semibold text-violet-300">
-              Teléfono
-              <input
-                type="tel"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-                className="w-full p-2 mt-1 text-white border rounded bg-neutral-900 border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
-              />
-            </label>
-
-            <label className="block mb-2 font-semibold text-violet-300">
-              Provincia
-              <input
-                type="text"
-                name="provincia"
-                value={formData.provincia}
-                onChange={handleChange}
-                className="w-full p-2 mt-1 text-white border rounded bg-neutral-900 border-violet-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
-              />
-            </label>
-
-            {/* Selector visual de avatars */}
-            <AvatarSelector
-              selectedAvatar={formData.avatar_url}
-              onSelect={(url) => setFormData((prev) => ({ ...prev, avatar_url: url }))}
-              className="mt-4"
+            <label className="block mb-2 font-semibold text-violet-300">Nombre *</label>
+            <input
+              type="text"
+              name="nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mb-3 rounded border border-[#4a4e69] bg-[#0f3460] text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
+              placeholder="Nombre"
             />
 
+            <label className="block mt-3 mb-2 font-semibold text-violet-300">Teléfono *</label>
+            <input
+              type="text"
+              name="telefono"
+              value={formData.telefono}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mb-3 rounded border border-[#4a4e69] bg-[#0f3460] text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
+              placeholder="Teléfono"
+            />
+
+            <label className="block mt-3 mb-2 font-semibold text-violet-300">Nombre Local</label>
+            <input
+              type="text"
+              name="nombre_local"
+              value={formData.nombre_local}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mb-3 rounded border border-[#4a4e69] bg-[#0f3460] text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
+              placeholder="Nombre Local"
+            />
+
+            <label className="block mt-3 mb-2 font-semibold text-violet-300">Provincia</label>
+            <input
+              type="text"
+              name="provincia"
+              value={formData.provincia}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mb-3 rounded border border-[#4a4e69] bg-[#0f3460] text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
+              placeholder="Provincia"
+            />
+
+            <label className="block mt-3 mb-2 font-semibold text-violet-300">Ciudad</label>
+            <input
+              type="text"
+              name="ciudad"
+              value={formData.ciudad}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mb-3 rounded border border-[#4a4e69] bg-[#0f3460] text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
+              placeholder="Ciudad"
+            />
+
+            <div className="mt-4">
+              {formData.avatar_url && (
+                <img
+                  src={formData.avatar_url}
+                  alt="avatar"
+                  className="object-cover w-24 h-24 mb-2 border-2 rounded-full border-violet-500"
+                />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full px-3 py-2 rounded border border-[#4a4e69] bg-[#0f3460] text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
+              />
+              <AvatarSelector
+                selectedAvatar={formData.avatar_url}
+                onSelect={(url) => setFormData((prev) => ({ ...prev, avatar_url: url }))}
+              />
+            </div>
+
             <div className="flex gap-4 mt-4">
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 text-white transition bg-green-600 rounded hover:bg-green-700"
-              >
+              <button onClick={handleSave} className="bg-green-600 btn hover:bg-green-700">
                 Guardar
               </button>
-              <button
-                onClick={handleCancel}
-                className="px-4 py-2 text-white transition bg-gray-600 rounded hover:bg-gray-700"
-              >
+              <button onClick={handleCancel} className="bg-gray-600 btn hover:bg-gray-700">
                 Cancelar
               </button>
             </div>
           </>
         ) : (
           <>
-            <p className="text-violet-300">
-              <strong>Nombre:</strong> {profileData?.nombre || "No especificado"}
-            </p>
-            <p className="text-violet-300">
-              <strong>Apellido:</strong> {profileData?.apellido || "No especificado"}
-            </p>
-            <p className="text-violet-300">
-              <strong>Apodo:</strong> {profileData?.apodo || "No especificado"}
-            </p>
-            <p className="text-violet-300">
-              <strong>Email:</strong> {profileData?.correo}
-            </p>
-            <p className="text-violet-300">
-              <strong>Teléfono:</strong> {profileData?.telefono || "No especificado"}
-            </p>
-            <p className="text-violet-300">
-              <strong>Provincia:</strong> {profileData?.provincia || "No especificado"}
-            </p>
-            <p className="text-violet-300">
-              <strong>Suscripción:</strong> {profileData?.suscripcion || "Gratuito"}
-            </p>
-            {profileData?.avatar_url && (
+            <div className="flex flex-col items-center mb-6">
               <img
                 src={profileData.avatar_url}
-                alt="Avatar"
-                className="w-24 h-24 mt-4 border-2 rounded-full border-violet-600"
+                alt="avatar"
+                className="object-cover w-40 h-40 mb-4 border-4 rounded-full border-violet-600"
               />
-            )}
-
+              <p className="text-center text-violet-300">
+                <strong>Nombre:</strong> {profileData.nombre}
+              </p>
+              <p className="text-center text-violet-300">
+                <strong>Teléfono:</strong> {profileData.telefono}
+              </p>
+              <p className="text-center text-violet-300">
+                <strong>Correo:</strong> {profileData.correo}
+              </p>
+              <p className="text-center text-violet-300">
+                <strong>Rol:</strong> {profileData.rol}
+              </p>
+              <p className="text-center text-violet-300">
+                <strong>Local:</strong> {profileData.nombre_local}
+              </p>
+              <p className="text-center text-violet-300">
+                <strong>Provincia:</strong> {profileData.provincia}
+              </p>
+              <p className="text-center text-violet-300">
+                <strong>Ciudad:</strong> {profileData.ciudad}
+              </p>
+            </div>
             <button
               onClick={() => setEditing(true)}
-              className="px-4 py-2 mt-4 text-white transition rounded bg-violet-600 hover:bg-violet-700"
+              className="btn bg-violet-600 hover:bg-violet-700"
             >
               Editar perfil
             </button>
@@ -255,59 +268,69 @@ export default function Profile() {
         )}
       </div>
 
-      {/* Mascotas */}
+      {/* Productos */}
       <div className="flex items-center justify-between w-full max-w-md mb-4">
-        <h3 className="text-2xl font-semibold text-violet-400">Mis Mascotas</h3>
+        <h3 className="text-2xl font-semibold text-violet-400">Mis Productos</h3>
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2 text-sm text-white transition rounded bg-violet-600 hover:bg-violet-700"
+          className="text-sm btn bg-violet-600 hover:bg-violet-700"
         >
-          + Agregar mascota
+          + Agregar
         </button>
       </div>
 
-      {mascotas.length === 0 ? (
-        <p className="w-full max-w-md mb-6 text-violet-300">No tenés mascotas registradas.</p>
-      ) : (
-        <div className="grid w-full max-w-md grid-cols-1 gap-6 sm:grid-cols-2">
-          {mascotas.map((m) => (
-            <div
-              key={m.id}
-              className="flex flex-col items-center p-4 border rounded-lg shadow-lg bg-neutral-800 border-violet-600"
-            >
-              <img
-                src={m.foto_url || "https://placehold.co/150x150?text=Mascota"}
-                alt={m.nombre}
-                className="object-cover w-32 h-32 mb-3 border-2 rounded-full border-violet-600"
-              />
-              <h4 className="text-lg font-semibold text-violet-400">{m.nombre}</h4>
-              <p className="text-sm text-violet-300">
-                {m.especie} - {m.raza || "Sin raza"}
-              </p>
-              <p className="text-sm text-violet-300">
-                {m.edad ? `${m.edad} años` : "Edad no especificada"}
-              </p>
-              <p className="mt-2 text-sm text-center text-violet-300">
-                {m.descripcion || "Sin descripción"}
-              </p>
-              <p className="mt-1 text-sm text-violet-400">Estado: {m.estado || "Desconocido"}</p>
+      <div className="grid w-full max-w-md grid-cols-1 gap-4">
+        {articulos.map((a) => (
+          <div
+            key={a.id}
+            className="flex overflow-hidden border rounded-lg shadow-lg bg-neutral-800 border-violet-600"
+          >
+            <img
+              src={a.imagen_url || "https://placehold.co/100x100"}
+              alt={a.titulo}
+              className="object-cover w-28 h-28"
+            />
+            <div className="flex flex-col justify-between p-4">
+              <div>
+                <h4 className="text-lg font-semibold text-violet-400">{a.titulo}</h4>
+                <p className="text-sm text-violet-300">
+                  {a.categoria} {a.marca && `| ${a.marca}`}
+                </p>
+                <p className="text-sm text-violet-300">
+                  ${a.precio?.toFixed(2)} | Stock: {a.stock}
+                </p>
+              </div>
+              <button
+                onClick={() => setEditModalArticulo(a)}
+                className="mt-2 text-xs btn bg-violet-700 hover:bg-violet-800"
+              >
+                Editar
+              </button>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
       <button
         onClick={handleLogout}
-        className="px-6 py-3 mt-10 text-white transition bg-red-600 rounded hover:bg-red-700"
+        className="mt-10 bg-red-600 btn hover:bg-red-700"
       >
         Cerrar sesión
       </button>
 
       {showModal && (
-        <ModalRegistrarMascota
+        <ModalRegistrarArticulo
           usuarioId={profileData.id}
           onClose={() => setShowModal(false)}
-          onMascotaAgregada={fetchProfileAndMascotas}
+          onArticuloAgregado={fetchProfileAndArticulos}
+        />
+      )}
+
+      {editModalArticulo && (
+        <ModalEditarArticulo
+          articulo={editModalArticulo}
+          onClose={() => setEditModalArticulo(null)}
+          onArticuloActualizado={fetchProfileAndArticulos}
         />
       )}
     </div>

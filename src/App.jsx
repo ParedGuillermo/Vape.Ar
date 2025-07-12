@@ -1,110 +1,116 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import { useAuth } from "./hooks/useAuth";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";  // Asegúrate de importar AuthProvider
+import { CartProvider } from "./components/CartContext"; // Cambio aquí
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
-// import Scan from "./pages/Scan"; // Comentado temporalmente
-// import Adopciones from "./pages/Adopciones"; // Comentado temporalmente
-import AdminPanel from "./pages/AdminPanel";
-import AdminBlog from "./pages/Adminblog";
-import Tiendas from "./pages/Tiendas";
-import TiendaDetalle from "./pages/TiendaDetalle";
+// Importa los componentes desde VapeCommunity
+import VapeCommunity from "./pages/VapeCommunity"; 
+import SaludYSeguridad from "./components/VapeCommunity/SaludYSeguridad";  // Página SaludYSeguridad añadida
+import Entrenamiento from "./components/VapeCommunity/NovedadesYTendencias";
+import ReseñasDeProductos from "./components/VapeCommunity/ReseñasDeProductos"; // Página añadida
+import ComunidadYForos from "./components/VapeCommunity/ComunidadYForos";  // Asegúrate de que el archivo exista
+import EstilosDeVidaYVapeo from "./components/VapeCommunity/EstilosDeVidaYVapeo"; // Página añadida
+import NovedadesYTendencias from "./components/VapeCommunity/NovedadesYTendencias"; // Asegúrate de que el archivo exista
+import EventosYEncuentros from "./components/VapeCommunity/EventosYEncuentros"; // Página añadida
+import LegislacionYRegulacion from "./components/VapeCommunity/LegislacionYRegulacion"; // Página añadida
+import GuiasYTutoriales from "./components/VapeCommunity/GuiasYTutoriales"; // Asegúrate de que el archivo exista
+import BlogPage from "./components/VapeCommunity/BlogPage"; // Asegúrate de que el archivo exista 
+import TiendaYProductos from "./components/VapeCommunity/TiendaYProductos"; // Asegúrate de que el archivo exista
+// Importar otras páginas y componentes
 import CargarProducto from "./pages/CargarProductos";
-// import ReportLostPets from "./components/ReportLostPets"; // Comentado temporalmente
-// import LostPets from "./pages/LostPets"; // Comentado temporalmente
-// import AdministrarQR from "./components/AdministrarQR"; // Comentado para omentar
-import VapeCommunity from "./components/VapeCommunity";
-import Salud from "./components/VapeCommunity/Salud";
-import Entrenamiento from "./components/VapeCommunity/Entrenamiento";
-import Historias from "./components/VapeCommunity/Historias";
-import Eventos from "./components/VapeCommunity/Eventos";
-import Recursos from "./components/VapeCommunity/Recursos";
-import SuccessStories from "./components/SuccessStories";
-import Merchandising from "./pages/Merchandising"; // ✅ NUEVO IMPORT
-
+import Merchandising from "./pages/Merchandising";
+import TiendaDetalle from "./pages/TiendaDetalle";
+import Home from "./pages/Home";
+import Adminblog from "./pages/Adminblog";
+import Adopciones from "./pages/Adopciones";
+import LostPets from "./pages/LostPets";
+import MedicalHistory from "./pages/MedicalHistory";
+import Pets from "./pages/Pets";
+import Profile from "./pages/Profile";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Scan from "./pages/Scan";
+import ScheduleAppointment from "./pages/ScheduleAppointment";
+import Tiendas from "./pages/Tiendas";
+import Nosotros from "./pages/Nosotros";
+// Componentes adicionales
 import BottomNav from "./components/BottomNav";
-import { CartProvider } from "./components/CartContext";
+import AvatarSelector from "./components/AvatarSelector";
 import CartModal from "./components/CartModal";
+import FeaturedPets from "./components/FeaturedPets";
+import HeroSection from "./components/HeroSection";
+import HeroNosotros from "./components/HeroNosotros";
+import HeroVapeCommunity from "./components/HeroVapeCommunity";
+import LostPetsMap from "./components/LostPetsMap";
+import ModalEditarArticulo from "./components/ModalEditarArticulo";
+import ModalRegistrarArticulo from "./components/ModalRegistrarArticulo";
+import ReportLostPets from "./components/ReportLostPets";
+import EsencialesCarousel from "./components/EsencialesCarousel";
+import Admin from "./pages/AdminPanel"; 
 
-const ProtectedRoute = ({ children }) => {
-  const { isLoggedIn } = useAuth();
-  return isLoggedIn ? children : <Navigate to="/login" replace />;
-};
+// Estilos
+import "./App.css";
+import "./index.css";
 
-export default function App() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
+function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
-          <div className="w-full min-h-screen p-0 m-0">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              {/* <Route path="/adopciones" element={<Adopciones />} /> */}
-              <Route path="/tiendas" element={<Tiendas />} />
-              <Route path="/tiendas/:id" element={<TiendaDetalle />} />
-              <Route path="/vape-community" element={<VapeCommunity />} />
-              <Route path="/merchandising" element={<Merchandising />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              {/* <Route path="/reportar-perdida" element={<ReportLostPets />} /> */}
-              {/* <Route path="/mascotas-perdidas" element={<LostPets />} /> */}
-              <Route path="/vape-community/salud" element={<Salud />} />
-              <Route path="/vape-community/entrenamiento" element={<Entrenamiento />} />
-              {/* <Route path="/vape-community/historias" element={<Historias />} /> */}
-              <Route path="/vape-community/eventos" element={<Eventos />} />
-              <Route path="/vape-community/recursos" element={<Recursos />} />
+    <Router>
+      {/* Envolviendo las rutas con AuthProvider */}
+      <AuthProvider>
+        {/* Envolviendo el CartProvider */}
+        <CartProvider>
+          <Routes>
+            {/* Rutas principales */}
+            <Route path="/" element={<Home />} />
+            <Route path="/adminblog" element={<Adminblog />} />
+            <Route path="/cargar-producto" element={<CargarProducto />} />
+            <Route path="/merchandising" element={<Merchandising />} />
+            <Route path="/vape-community" element={<VapeCommunity />} />
+            <Route path="/vape-community/comunidad-y-foros" element={<ComunidadYForos />} />
+            <Route path="/vape-community/reseñas-de-productos" element={<ReseñasDeProductos />} />
+            <Route path="/vape-community/estilos-de-vida-y-vapeo" element={<EstilosDeVidaYVapeo />} />
+            <Route path="/vape-community/salud-y-seguridad" element={<SaludYSeguridad />} />
+            <Route path="/vape-community/novedades-y-tendencias" element={<NovedadesYTendencias />} />
+            <Route path="/vape-community/eventos-y-encuentros" element={<EventosYEncuentros />} />
+            <Route path="/vape-community/legislacion-y-regulacion" element={<LegislacionYRegulacion />} />
+            <Route path="/vape-community/guias-y-tutoriales" element={<GuiasYTutoriales />} />
+            <Route path="/vape-community/blog" element={<BlogPage />} />
+            <Route path="/vape-community/tienda-y-productos" element={<TiendaYProductos />} />
+            <Route path="/admin" element={<Admin />} />
 
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-              {/* <Route path="/scan" element={<ProtectedRoute><Scan /></ProtectedRoute>} /> */}
-              <Route
-                path="/cargar-producto"
-                element={
-                  <ProtectedRoute>
-                    <CargarProducto />
-                  </ProtectedRoute>
-                }
-              />
-              {/* <Route path="/administrar-qr" element={<ProtectedRoute><AdministrarQR /></ProtectedRoute>} /> */}
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute>
-                    <AdminPanel />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/adminblog"
-                element={
-                  <ProtectedRoute>
-                    <AdminBlog />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/casos-exito" element={<SuccessStories />} />
-            </Routes>
-          </div>
+            {/* Otras rutas */}
+            <Route path="/entrenamiento" element={<Entrenamiento />} />
+            <Route path="/tiendas/:id" element={<TiendaDetalle />} /> {/* RUTA CORREGIDA */}
+            <Route path="/adopciones" element={<Adopciones />} />
+            <Route path="/lost-pets" element={<LostPets />} />
+            <Route path="/medical-history" element={<MedicalHistory />} />
+            <Route path="/pets" element={<Pets />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/scan" element={<Scan />} />
+            <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
+            <Route path="/tiendas" element={<Tiendas />} />
+            <Route path="/nosotros" element={<Nosotros/>} />
 
-          {isCartOpen && (
-            <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-          )}
+            {/* Otros componentes */}
+            <Route path="/featured-pets" element={<FeaturedPets />} />
+            <Route path="/hero-section" element={<HeroSection />} />
+            <Route path="/lost-pets-map" element={<LostPetsMap />} />
+            <Route path="/modal-editar-articulo" element={<ModalEditarArticulo />} />
+            <Route path="/modal-registrar-articulo" element={<ModalRegistrarArticulo />} />
+            <Route path="/report-lost-pets" element={<ReportLostPets />} />
+            <Route path="/hero-vape-community" element={<HeroVapeCommunity />} />
+            <Route path="/hero-nosotros" element={<HeroNosotros />} />
+            <Route path="/esenciales-carousel" element={<EsencialesCarousel />} />
+          </Routes>
 
-          <BottomNav onCartClick={() => setIsCartOpen(true)} />
-        </BrowserRouter>
-      </CartProvider>
-    </AuthProvider>
+          {/* Componente de navegación inferior */}
+          <BottomNav />
+        </CartProvider>
+      </AuthProvider>
+    </Router>
   );
 }
+
+export default App;

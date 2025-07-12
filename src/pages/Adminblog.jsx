@@ -1,84 +1,81 @@
-// src/pages/AdminBlog.jsx
-import React, { useEffect, useState } from "react";
-import { supabase } from "../supabaseClient";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { supabase } from "../supabaseClient"; // Asegúrate de tener configurado tu cliente Supabase
 
 export default function AdminBlog() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const isAdmin = user?.email === "walterguillermopared@gmail.com";
-
-  const [entradas, setEntradas] = useState([]);
-  const [testimonios, setTestimonios] = useState([]);
-  const [editing, setEditing] = useState(null);
   const [newEntry, setNewEntry] = useState({
     titulo: "",
     categoria: "Entrenamiento",
     contenido: "",
     imagen_url: "",
-    autor: user?.email || "Admin"
+    autor: "Admin",
   });
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!isAdmin) return navigate("/");
-    fetchEntradas();
-    fetchTestimonios();
-  }, [user]);
-
-  const fetchEntradas = async () => {
+  // Función para cargar imagen al bucket 'avatars' de Supabase
+  const uploadImage = async (file) => {
+    setLoading(true);
+    const fileName = `${Date.now()}-${file.name}`;
     const { data, error } = await supabase
-      .from("entradas_blog")
-      .select("*")
-      .order("creado_en", { ascending: false });
-    if (!error) setEntradas(data);
+      .storage
+      .from("avatars")
+      .upload(fileName, file);
+
+    if (error) {
+      console.error("Error uploading image:", error);
+      setLoading(false);
+      return null;
+    }
+
+    // Obtener la URL pública de la imagen
+    const { publicURL, error: urlError } = supabase
+      .storage
+      .from("avatars")
+      .getPublicUrl(fileName);
+
+    if (urlError) {
+      console.error("Error getting image URL:", urlError);
+      setLoading(false);
+      return null;
+    }
+
+    setLoading(false);
+    return publicURL;
   };
 
-  const fetchTestimonios = async () => {
-    const { data, error } = await supabase
-      .from("entradas_blog")
-      .select("*")
-      .eq("categoria", "Testimonios")
-      .order("creado_en", { ascending: false });
-    if (!error) setTestimonios(data);
+  // Manejar la carga de la imagen
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = await uploadImage(file);
+      if (url) {
+        setNewEntry((prevState) => ({
+          ...prevState,
+          imagen_url: url,
+        }));
+      }
+    }
   };
 
+  // Guardar la entrada
   const handleSave = async () => {
     if (!newEntry.titulo.trim() || !newEntry.contenido.trim()) {
       alert("El título y contenido son obligatorios.");
       return;
     }
+
     const { error } = await supabase.from("entradas_blog").insert([newEntry]);
     if (!error) {
+      alert("Entrada guardada exitosamente.");
       setNewEntry({
         titulo: "",
         categoria: "Entrenamiento",
         contenido: "",
         imagen_url: "",
-        autor: user?.email || "Admin"
+        autor: "Admin",
       });
-      fetchEntradas();
-      fetchTestimonios();
+    } else {
+      alert("Error al guardar la entrada.");
     }
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm("¿Eliminar esta entrada?")) return;
-    await supabase.from("entradas_blog").delete().eq("id", id);
-    fetchEntradas();
-    fetchTestimonios();
-  };
-
-  const handleUpdate = async () => {
-    if (!editing.titulo.trim() || !editing.contenido.trim()) {
-      alert("El título y contenido son obligatorios.");
-      return;
-    }
-    const { id, ...rest } = editing;
-    await supabase.from("entradas_blog").update(rest).eq("id", id);
-    setEditing(null);
-    fetchEntradas();
-    fetchTestimonios();
   };
 
   return (
@@ -90,6 +87,7 @@ export default function AdminBlog() {
       {/* Nuevo post */}
       <section className="mb-8 rounded-lg bg-[#16213e] p-4 shadow-lg shadow-[#e9456055]">
         <h2 className="mb-4 text-xl font-semibold text-[#9f86c0]">➕ Nueva Entrada</h2>
+        
         <input
           type="text"
           placeholder="Título"
@@ -98,6 +96,7 @@ export default function AdminBlog() {
           className="w-full mb-3 rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100 placeholder-gray-400
             focus:outline-none focus:ring-2 focus:ring-[#e94560]"
         />
+        
         <select
           value={newEntry.categoria}
           onChange={(e) => setNewEntry({ ...newEntry, categoria: e.target.value })}
@@ -111,6 +110,7 @@ export default function AdminBlog() {
           <option>Salud</option>
           <option>Testimonios</option>
         </select>
+        
         <textarea
           placeholder="Contenido"
           value={newEntry.contenido}
@@ -119,182 +119,21 @@ export default function AdminBlog() {
           className="w-full mb-3 resize-none rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100 placeholder-gray-400
             focus:outline-none focus:ring-2 focus:ring-[#e94560]"
         />
+        
+        {/* Input para seleccionar la imagen */}
         <input
-          type="text"
-          placeholder="URL de la imagen"
-          value={newEntry.imagen_url}
-          onChange={(e) => setNewEntry({ ...newEntry, imagen_url: e.target.value })}
+          type="file"
+          onChange={handleImageChange}
           className="w-full mb-4 rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100 placeholder-gray-400
             focus:outline-none focus:ring-2 focus:ring-[#e94560]"
         />
+
         <button
           onClick={handleSave}
           className="w-full rounded bg-[#e94560] py-3 text-white font-semibold hover:bg-[#d63447] transition"
         >
           Publicar
         </button>
-      </section>
-
-      {/* Testimonios */}
-      <section className="mb-8 space-y-4">
-        <h2 className="mb-3 text-xl font-semibold text-[#9f86c0]">🗂 Testimonios</h2>
-        {testimonios.length === 0 && (
-          <p className="text-center text-[#c9d1d9]">No hay testimonios publicados.</p>
-        )}
-        {testimonios.map((testimonio) => (
-          <div
-            key={testimonio.id}
-            className="rounded-lg bg-[#16213e] p-4 shadow-lg shadow-[#e9456055]"
-          >
-            {editing?.id === testimonio.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editing.titulo}
-                  onChange={(e) => setEditing({ ...editing, titulo: e.target.value })}
-                  className="w-full mb-3 rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100
-                    focus:outline-none focus:ring-2 focus:ring-[#e94560]"
-                />
-                <textarea
-                  value={editing.contenido}
-                  onChange={(e) => setEditing({ ...editing, contenido: e.target.value })}
-                  rows={4}
-                  className="w-full mb-3 resize-none rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100
-                    focus:outline-none focus:ring-2 focus:ring-[#e94560]"
-                />
-                <input
-                  type="text"
-                  value={editing.imagen_url}
-                  onChange={(e) => setEditing({ ...editing, imagen_url: e.target.value })}
-                  className="w-full mb-3 rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100
-                    focus:outline-none focus:ring-2 focus:ring-[#e94560]"
-                />
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleUpdate}
-                    className="flex-1 rounded bg-[#22d3ee] py-2 text-gray-900 font-semibold hover:bg-[#1ea7c7] transition"
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    onClick={() => setEditing(null)}
-                    className="flex-1 rounded bg-[#4a4e69] py-2 text-gray-300 font-semibold hover:bg-[#6c6f85] transition"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h3 className="text-lg font-bold text-[#e94560]">{testimonio.titulo}</h3>
-                <p className="text-sm text-[#9f86c0]">{testimonio.categoria}</p>
-                <p className="mt-2 text-sm text-[#c9d1d9]">{testimonio.contenido?.slice(0, 200)}...</p>
-                {testimonio.imagen_url && (
-                  <img
-                    src={testimonio.imagen_url}
-                    alt="Ilustración"
-                    className="object-cover w-full mt-3 rounded"
-                  />
-                )}
-                <div className="flex gap-4 mt-4 text-sm">
-                  <button
-                    onClick={() => setEditing(testimonio)}
-                    className="text-[#22d3ee] font-semibold hover:text-[#67e8f9]"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(testimonio.id)}
-                    className="text-[#fb7185] font-semibold hover:text-[#f43f5e]"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
-      </section>
-
-      {/* Otras entradas */}
-      <section className="space-y-4">
-        <h2 className="mb-3 text-xl font-semibold text-[#9f86c0]">🗂 Otras Entradas</h2>
-        {entradas.length === 0 && (
-          <p className="text-center text-[#c9d1d9]">No hay entradas publicadas.</p>
-        )}
-        {entradas.map((entrada) => (
-          <div
-            key={entrada.id}
-            className="rounded-lg bg-[#16213e] p-4 shadow-lg shadow-[#e9456055]"
-          >
-            {editing?.id === entrada.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editing.titulo}
-                  onChange={(e) => setEditing({ ...editing, titulo: e.target.value })}
-                  className="w-full mb-3 rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100
-                    focus:outline-none focus:ring-2 focus:ring-[#e94560]"
-                />
-                <textarea
-                  value={editing.contenido}
-                  onChange={(e) => setEditing({ ...editing, contenido: e.target.value })}
-                  rows={4}
-                  className="w-full mb-3 resize-none rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100
-                    focus:outline-none focus:ring-2 focus:ring-[#e94560]"
-                />
-                <input
-                  type="text"
-                  value={editing.imagen_url}
-                  onChange={(e) => setEditing({ ...editing, imagen_url: e.target.value })}
-                  className="w-full mb-3 rounded border border-[#4a4e69] bg-[#0f3460] px-3 py-2 text-sm text-gray-100
-                    focus:outline-none focus:ring-2 focus:ring-[#e94560]"
-                />
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleUpdate}
-                    className="flex-1 rounded bg-[#22d3ee] py-2 text-gray-900 font-semibold hover:bg-[#1ea7c7] transition"
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    onClick={() => setEditing(null)}
-                    className="flex-1 rounded bg-[#4a4e69] py-2 text-gray-300 font-semibold hover:bg-[#6c6f85] transition"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h3 className="text-lg font-bold text-[#e94560]">{entrada.titulo}</h3>
-                <p className="text-sm text-[#9f86c0]">{entrada.categoria}</p>
-                <p className="mt-2 text-sm text-[#c9d1d9]">{entrada.contenido?.slice(0, 200)}...</p>
-                {entrada.imagen_url && (
-                  <img
-                    src={entrada.imagen_url}
-                    alt="Ilustración"
-                    className="object-cover w-full mt-3 rounded"
-                  />
-                )}
-                <div className="flex gap-4 mt-4 text-sm">
-                  <button
-                    onClick={() => setEditing(entrada)}
-                    className="text-[#22d3ee] font-semibold hover:text-[#67e8f9]"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(entrada.id)}
-                    className="text-[#fb7185] font-semibold hover:text-[#f43f5e]"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
       </section>
     </div>
   );

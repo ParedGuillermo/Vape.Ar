@@ -1,70 +1,113 @@
-import React, { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import { supabase } from "../../supabaseClient";
+import React from "react";
 
-export default function BlogPage({ categoria, tituloGeneral }) {
-  const [entradas, setEntradas] = useState([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchEntradas = async () => {
-      const { data, error } = await supabase
-        .from("entradas_blog")
-        .select("*")
-        .eq("categoria", categoria)
-        .order("creado_en", { ascending: true });
-
-      if (error) {
-        console.error("Error al cargar:", error.message);
-      } else {
-        setEntradas(data);
-      }
-      setLoading(false);
-    };
-
-    fetchEntradas();
-  }, [categoria]);
-
-  if (loading) return <p className="p-6 text-center">Cargando contenido...</p>;
-  if (entradas.length === 0) return <p className="p-6 text-center">No hay contenido aún.</p>;
-
-  const entradaActual = entradas[currentStep];
-
+export default function BlogPage() {
   return (
-    <div className="max-w-4xl p-6 mx-auto bg-white rounded-lg shadow-lg">
-      <h1 className="mb-6 text-3xl font-bold text-center text-blue-600">{tituloGeneral}</h1>
+    <div className="min-h-screen p-6 bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-gray-300">
+      {/* Título de la página */}
+      <h1 className="mb-6 text-center text-3xl font-extrabold text-[#e94560] drop-shadow-md">
+        Blog sobre Vapeo
+      </h1>
 
-      <h2 className="text-2xl font-semibold text-gray-800">{entradaActual.titulo}</h2>
+      {/* Introducción */}
+      <section className="mb-8">
+        <p className="text-center text-[#c9d1d9]">
+          Bienvenido al blog donde podrás encontrar artículos, noticias y recursos sobre el mundo del vapeo. Desde consejos para principiantes hasta tendencias y regulaciones, aquí aprenderás todo lo necesario para mejorar tu experiencia de vapeo.
+        </p>
+      </section>
 
-      {entradaActual.imagen_url && (
-        <img
-          src={entradaActual.imagen_url}
-          alt={entradaActual.titulo}
-          className="my-4 rounded-lg max-h-[300px] object-cover w-full"
-        />
-      )}
+      {/* Lista de artículos del blog */}
+      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Artículo 1 */}
+        <div className="bg-[#16213e] p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#e94560] mb-2">Introducción al Vapeo</h2>
+          <p className="text-[#c9d1d9] mb-4">
+            Si eres nuevo en el mundo del vapeo, este artículo es para ti. Aquí te explicamos todo lo que necesitas saber para comenzar tu experiencia de vapeo con seguridad y facilidad.
+          </p>
+          <a
+            href="/vape-community/introduccion-al-vapeo"
+            className="text-[#e94560] hover:text-[#c9d1d9] transition-colors"
+          >
+            Leer más
+          </a>
+        </div>
 
-      <div className="prose text-gray-700 max-w-none prose-p:leading-relaxed prose-h3:mt-4 prose-h3:text-xl">
-        <ReactMarkdown>{entradaActual.contenido}</ReactMarkdown>
-      </div>
+        {/* Artículo 2 */}
+        <div className="bg-[#16213e] p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#e94560] mb-2">Últimas Tendencias en el Mundo del Vapeo</h2>
+          <p className="text-[#c9d1d9] mb-4">
+            ¿Quieres estar al tanto de las últimas tendencias? Este artículo cubre los nuevos dispositivos, líquidos y estilos de vapeo que están ganando popularidad en 2023.
+          </p>
+          <a
+            href="/vape-community/tendencias-vapeo-2023"
+            className="text-[#e94560] hover:text-[#c9d1d9] transition-colors"
+          >
+            Leer más
+          </a>
+        </div>
 
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={() => setCurrentStep((prev) => Math.max(prev - 1, 0))}
-          className="px-4 py-2 text-white bg-gray-300 rounded-lg disabled:opacity-50"
-          disabled={currentStep === 0}
-        >
-          Anterior
-        </button>
-        <button
-          onClick={() => setCurrentStep((prev) => Math.min(prev + 1, entradas.length - 1))}
-          className="px-4 py-2 text-white bg-blue-600 rounded-lg disabled:opacity-50"
-          disabled={currentStep === entradas.length - 1}
-        >
-          Siguiente
-        </button>
-      </div>
+        {/* Artículo 3 */}
+        <div className="bg-[#16213e] p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#e94560] mb-2">Regulaciones sobre el Vapeo en Argentina</h2>
+          <p className="text-[#c9d1d9] mb-4">
+            Las regulaciones sobre el vapeo están cambiando constantemente. Este artículo te ofrece un vistazo a las leyes más recientes en Argentina y cómo afectan a los consumidores.
+          </p>
+          <a
+            href="/vape-community/regulaciones-vapeo-argentina"
+            className="text-[#e94560] hover:text-[#c9d1d9] transition-colors"
+          >
+            Leer más
+          </a>
+        </div>
+
+        {/* Artículo 4 */}
+        <div className="bg-[#16213e] p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#e94560] mb-2">Cómo Mantener tu Dispositivo de Vapeo</h2>
+          <p className="text-[#c9d1d9] mb-4">
+            Un dispositivo bien cuidado ofrece una experiencia de vapeo mucho más agradable. Aquí te damos consejos sobre cómo mantener y limpiar tu vapeador.
+          </p>
+          <a
+            href="/vape-community/mantener-dispositivo-vapeo"
+            className="text-[#e94560] hover:text-[#c9d1d9] transition-colors"
+          >
+            Leer más
+          </a>
+        </div>
+
+        {/* Artículo 5 */}
+        <div className="bg-[#16213e] p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#e94560] mb-2">La Ciencia Detrás del Vapeo</h2>
+          <p className="text-[#c9d1d9] mb-4">
+            ¿Te has preguntado cómo funciona el vapeo? En este artículo, desglosamos la ciencia detrás del proceso de vaporización y cómo el vapor se genera.
+          </p>
+          <a
+            href="/vape-community/ciencia-del-vapeo"
+            className="text-[#e94560] hover:text-[#c9d1d9] transition-colors"
+          >
+            Leer más
+          </a>
+        </div>
+
+        {/* Artículo 6 */}
+        <div className="bg-[#16213e] p-4 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-[#e94560] mb-2">Vapeo y Salud: Lo que Necesitas Saber</h2>
+          <p className="text-[#c9d1d9] mb-4">
+            El vapeo y la salud es un tema debatido. Este artículo te brinda información sobre los estudios más recientes relacionados con el vapeo y sus posibles efectos en la salud.
+          </p>
+          <a
+            href="/vape-community/vapeo-y-salud"
+            className="text-[#e94560] hover:text-[#c9d1d9] transition-colors"
+          >
+            Leer más
+          </a>
+        </div>
+      </section>
+
+      {/* Conclusión */}
+      <section className="mt-12 text-center">
+        <p className="text-[#c9d1d9]">
+          Estos son solo algunos de los artículos disponibles en nuestro blog. No olvides seguirnos para estar al tanto de todas las novedades y recursos relacionados con el vapeo.
+        </p>
+      </section>
     </div>
   );
 }

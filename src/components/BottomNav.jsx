@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth"; // Importa el hook de autenticación
 import { useCart } from "../components/CartContext";
 
 // Íconos
@@ -27,7 +27,6 @@ export default function BottomNav({ onCartClick }) {
     { name: "Inicio", path: "/", icon: homeIcon },
     { name: "Tiendas", path: "/tiendas", icon: tiendaIcon },
     { name: "Merchandising", path: "/merchandising", icon: agregarIcon },
-    { name: "Perfil", path: "/profile", icon: perfilIcon },
     { name: "Vape Community", path: "/vape-community", icon: petSocietyIcon },
   ];
 
@@ -60,28 +59,19 @@ export default function BottomNav({ onCartClick }) {
       icon: menuIcon,
       onClick: openMenuSections,
     },
+    // Agregamos el botón de Perfil siempre, pero con lógica diferente si el usuario no está logueado
     {
-      label: "Carrito",
-      icon: null,
+      label: "Perfil",
+      icon: perfilIcon,
       onClick: () => {
-        openMenuCart();
-        onCartClick && onCartClick();
+        if (isLoggedIn) {
+          navigate("/profile"); // Si el usuario está logueado, va al perfil
+        } else {
+          navigate("/login"); // Si no está logueado, va a login
+        }
+        closeMenu();
       },
-      badge: totalQuantity,
-      isSvg: true,
     },
-    ...(isLoggedIn
-      ? [
-          {
-            label: "Perfil",
-            icon: perfilIcon,
-            onClick: () => {
-              navigate("/profile");
-              closeMenu();
-            },
-          },
-        ]
-      : []),
   ];
 
   return (
@@ -168,6 +158,21 @@ export default function BottomNav({ onCartClick }) {
                   <span className="text-xs text-center text-white select-none">{name}</span>
                 </button>
               ))}
+              {/* Mostrar el botón de Perfil siempre, pero redirigir a Login si no está logueado */}
+              <button
+                onClick={() => {
+                  if (isLoggedIn) {
+                    navigate("/profile"); // Si el usuario está logueado, redirigir al perfil
+                  } else {
+                    navigate("/login"); // Si no está logueado, redirigir al login
+                  }
+                  closeMenu();
+                }}
+                className="flex flex-col items-center justify-center p-3 transition bg-[#222222] rounded-xl hover:bg-violet-800 hover:shadow-violet-600/50 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              >
+                <img src={perfilIcon} alt="Perfil" className="w-8 h-8 mb-1" />
+                <span className="text-xs text-center text-white select-none">Perfil</span>
+              </button>
             </div>
           ) : (
             <CartModal onClose={closeMenu} />
