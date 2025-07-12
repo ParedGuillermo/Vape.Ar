@@ -8,9 +8,6 @@ const Nosotros = () => {
   return (
     <div className="bg-very-dark-bg text-light-gray font-poppins pb-[80px]">
 
-      {/* Hero de la página */}
-      <HeroNosotros />
-
       {/* Sección sobre el proyecto */}
       <section className="px-6 py-16 text-center">
         <h2 className="mb-6 text-3xl font-bold sm:text-4xl text-neon-pink">
