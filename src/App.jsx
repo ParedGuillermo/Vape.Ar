@@ -16,6 +16,10 @@ import LegislacionYRegulacion from "./components/VapeCommunity/LegislacionYRegul
 import GuiasYTutoriales from "./components/VapeCommunity/GuiasYTutoriales"; // Asegúrate de que el archivo exista
 import BlogPage from "./components/VapeCommunity/BlogPage"; // Asegúrate de que el archivo exista 
 import TiendaYProductos from "./components/VapeCommunity/TiendaYProductos"; // Asegúrate de que el archivo exista
+
+// Importar la nueva página Colaboraciones
+import Colaboraciones from "./pages/Colaboraciones";
+
 // Importar otras páginas y componentes
 import CargarProducto from "./pages/CargarProductos";
 import Merchandising from "./pages/Merchandising";
@@ -76,6 +80,10 @@ function App() {
             <Route path="/vape-community/guias-y-tutoriales" element={<GuiasYTutoriales />} />
             <Route path="/vape-community/blog" element={<BlogPage />} />
             <Route path="/vape-community/tienda-y-productos" element={<TiendaYProductos />} />
+
+            {/* Nueva ruta para Colaboraciones */}
+            <Route path="/colaboraciones" element={<Colaboraciones />} />
+
             <Route path="/admin" element={<Admin />} />
 
             {/* Otras rutas */}
@@ -91,7 +99,7 @@ function App() {
             <Route path="/scan" element={<Scan />} />
             <Route path="/schedule-appointment" element={<ScheduleAppointment />} />
             <Route path="/tiendas" element={<Tiendas />} />
-            <Route path="/nosotros" element={<Nosotros/>} />
+            <Route path="/nosotros" element={<Nosotros />} />
 
             {/* Otros componentes */}
             <Route path="/featured-pets" element={<FeaturedPets />} />

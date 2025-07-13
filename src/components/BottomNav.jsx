@@ -23,11 +23,15 @@ export default function BottomNav({ onCartClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuView, setMenuView] = useState("sections");
 
+  // Usamos un icono emoji para "Aportar" — puedes reemplazarlo por ruta a imagen si querés
+  const aportarIcon = "🚀";
+
   const sections = [
     { name: "Inicio", path: "/", icon: homeIcon },
     { name: "Tiendas", path: "/tiendas", icon: tiendaIcon },
     { name: "Merchandising", path: "/merchandising", icon: agregarIcon },
     { name: "Vape Community", path: "/vape-community", icon: petSocietyIcon },
+    { name: "Aportar", path: "/colaboraciones", icon: aportarIcon }, // botón nuevo
   ];
 
   if (isLoggedIn && user?.email === "walterguillermopared@gmail.com") {
@@ -154,7 +158,12 @@ export default function BottomNav({ onCartClick }) {
                   }}
                   className="flex flex-col items-center justify-center p-3 transition bg-[#222222] rounded-xl hover:bg-violet-800 hover:shadow-violet-600/50 focus:outline-none focus:ring-2 focus:ring-violet-500"
                 >
-                  <img src={icon} alt={name} className="w-8 h-8 mb-1" />
+                  {/* Si el icono es string emoji, mostrarlo así, si es ruta, mostrar imagen */}
+                  {typeof icon === "string" && icon.length <= 2 ? (
+                    <span className="mb-1 text-3xl">{icon}</span>
+                  ) : (
+                    <img src={icon} alt={name} className="w-8 h-8 mb-1" />
+                  )}
                   <span className="text-xs text-center text-white select-none">{name}</span>
                 </button>
               ))}
