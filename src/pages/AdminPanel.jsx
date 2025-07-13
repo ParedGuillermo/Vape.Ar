@@ -8,8 +8,11 @@ export default function AdminPanel() {
   const navigate = useNavigate();
 
   const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [entradasAporte, setEntradasAporte] = useState([]);
+  const [loadingUsuarios, setLoadingUsuarios] = useState(true);
+  const [loadingAportes, setLoadingAportes] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
+  const [tabActiva, setTabActiva] = useState("usuarios"); // Control simple de pestañas: "usuarios" o "aportes"
 
   const isAdmin = user?.email === "walterguillermopared@gmail.com";
 
@@ -19,28 +22,63 @@ export default function AdminPanel() {
       return;
     }
 
-    fetchData();
+    fetchUsuarios();
+    fetchAportes();
   }, [user]);
 
-  const fetchData = async () => {
-    setLoading(true);
-
-    const { data: usuariosData } = await supabase.from("usuarios").select("*");
+  // --- Usuarios ---
+  const fetchUsuarios = async () => {
+    setLoadingUsuarios(true);
+    const { data: usuariosData, error } = await supabase.from("usuarios").select("*");
+    if (error) console.error("Error fetching usuarios:", error);
     setUsuarios(usuariosData || []);
-    setLoading(false);
+    setLoadingUsuarios(false);
   };
 
   const handleDeleteUser = async (id) => {
     if (!window.confirm("¿Eliminar este usuario?")) return;
-    await supabase.from("usuarios").delete().eq("id", id);
-    fetchData();
+    const { error } = await supabase.from("usuarios").delete().eq("id", id);
+    if (error) {
+      alert("Error eliminando usuario: " + error.message);
+    } else {
+      fetchUsuarios();
+    }
   };
 
   const handleUpdateUser = async () => {
     const { id, ...data } = editingUser;
-    await supabase.from("usuarios").update(data).eq("id", id);
-    setEditingUser(null);
-    fetchData();
+    const { error } = await supabase.from("usuarios").update(data).eq("id", id);
+    if (error) {
+      alert("Error actualizando usuario: " + error.message);
+    } else {
+      setEditingUser(null);
+      fetchUsuarios();
+    }
+  };
+
+  // --- Aportes ---
+  const fetchAportes = async () => {
+    setLoadingAportes(true);
+    const { data: aportesData, error } = await supabase
+      .from("entradas_blog")
+      .select("*")
+      .eq("categoria", "Aporte")
+      .order("creado_en", { ascending: false });
+    if (error) console.error("Error fetching aportes:", error);
+    setEntradasAporte(aportesData || []);
+    setLoadingAportes(false);
+  };
+
+  const actualizarEstadoAporte = async (id, nuevoEstado) => {
+    const { error } = await supabase
+      .from("entradas_blog")
+      .update({ estado: nuevoEstado })
+      .eq("id", id);
+    if (error) {
+      alert("Error actualizando estado: " + error.message);
+    } else {
+      fetchAportes();
+    }
   };
 
   const handleLogout = async () => {
@@ -64,59 +102,82 @@ export default function AdminPanel() {
         Panel de Administración
       </h1>
 
-      {loading ? (
-        <p className="text-center text-[#9f86c0] animate-pulse">Cargando datos...</p>
-      ) : (
+      {/* Pestañas para elegir sección */}
+      <div className="flex justify-center mb-8 space-x-4">
+        <button
+          onClick={() => setTabActiva("usuarios")}
+          className={`px-6 py-2 font-semibold rounded-md transition ${
+            tabActiva === "usuarios"
+              ? "bg-[#e94560] text-white shadow-lg"
+              : "bg-[#16213e] text-[#9f86c0] hover:bg-[#0f3460]"
+          }`}
+        >
+          Usuarios
+        </button>
+        <button
+          onClick={() => setTabActiva("aportes")}
+          className={`px-6 py-2 font-semibold rounded-md transition ${
+            tabActiva === "aportes"
+              ? "bg-[#e94560] text-white shadow-lg"
+              : "bg-[#16213e] text-[#9f86c0] hover:bg-[#0f3460]"
+          }`}
+        >
+          Solicitudes de Aporte
+        </button>
+      </div>
+
+      {/* Contenido pestañas */}
+      {tabActiva === "usuarios" && (
         <>
-          {/* Usuarios */}
-          <section className="mb-8">
-            <h2 className="mb-3 text-xl font-semibold text-[#9f86c0]">Usuarios</h2>
-            <div className="p-3 overflow-auto bg-[#16213e] border border-[#4a4e69] rounded-lg shadow-md max-h-72">
-              <table className="w-full text-xs text-gray-200 sm:text-sm">
-                <thead>
-                  <tr className="bg-[#0f3460] text-[#e94560] uppercase text-[0.65rem] sm:text-xs">
-                    <th className="px-2 py-1">Nombre</th>
-                    <th className="px-2 py-1">Correo</th>
-                    <th className="px-2 py-1">Rol</th>
-                    <th className="px-2 py-1">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {usuarios.map((u) => (
-                    <tr
-                      key={u.id}
-                      className="border-b border-[#4a4e69] hover:bg-[#0f3460]"
-                    >
-                      <td className="px-2 py-1">{u.nombre} {u.apellido}</td>
-                      <td className="px-2 py-1">{u.correo}</td>
-                      <td className="px-2 py-1">{u.rol}</td>
-                      <td className="px-2 py-1 space-x-2 whitespace-nowrap">
-                        <button
-                          onClick={() => setEditingUser(u)}
-                          className="font-medium text-[#e94560] hover:text-[#fb7185] transition"
-                        >
-                          Editar
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(u.id)}
-                          className="font-medium text-[#fb7185] hover:text-[#e94560] transition"
-                        >
-                          Eliminar
-                        </button>
-                      </td>
+          {loadingUsuarios ? (
+            <p className="text-center text-[#9f86c0] animate-pulse">Cargando usuarios...</p>
+          ) : (
+            <section className="mb-8">
+              <h2 className="mb-3 text-xl font-semibold text-[#9f86c0]">Usuarios</h2>
+              <div className="p-3 overflow-auto bg-[#16213e] border border-[#4a4e69] rounded-lg shadow-md max-h-72">
+                <table className="w-full text-xs text-gray-200 sm:text-sm">
+                  <thead>
+                    <tr className="bg-[#0f3460] text-[#e94560] uppercase text-[0.65rem] sm:text-xs">
+                      <th className="px-2 py-1">Nombre</th>
+                      <th className="px-2 py-1">Correo</th>
+                      <th className="px-2 py-1">Rol</th>
+                      <th className="px-2 py-1">Acciones</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
+                  </thead>
+                  <tbody>
+                    {usuarios.map((u) => (
+                      <tr key={u.id} className="border-b border-[#4a4e69] hover:bg-[#0f3460]">
+                        <td className="px-2 py-1">{u.nombre} {u.apellido}</td>
+                        <td className="px-2 py-1">{u.correo}</td>
+                        <td className="px-2 py-1">{u.rol}</td>
+                        <td className="px-2 py-1 space-x-2 whitespace-nowrap">
+                          <button
+                            onClick={() => setEditingUser(u)}
+                            className="font-medium text-[#e94560] hover:text-[#fb7185] transition"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(u.id)}
+                            className="font-medium text-[#fb7185] hover:text-[#e94560] transition"
+                          >
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
 
           {/* Edición Usuario */}
           {editingUser && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70">
               <div className="w-full max-w-md p-6 bg-[#16213e] rounded-lg shadow-lg text-gray-200 overflow-auto max-h-[80vh]">
                 <h3 className="mb-4 text-xl font-bold text-[#e94560]">Editar Usuario</h3>
-                
+
                 <input
                   type="text"
                   value={editingUser.nombre}
@@ -126,7 +187,7 @@ export default function AdminPanel() {
                   placeholder="Nombre"
                   className="w-full p-3 mb-4 bg-[#0f3460] border border-[#4a4e69] rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
                 />
-                
+
                 <input
                   type="text"
                   value={editingUser.apellido}
@@ -136,7 +197,7 @@ export default function AdminPanel() {
                   placeholder="Apellido"
                   className="w-full p-3 mb-4 bg-[#0f3460] border border-[#4a4e69] rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#e94560]"
                 />
-                
+
                 <input
                   type="text"
                   value={editingUser.correo}
@@ -236,17 +297,79 @@ export default function AdminPanel() {
               </div>
             </div>
           )}
-
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={handleLogout}
-              className="w-full max-w-xs px-6 py-3 font-semibold text-white bg-[#fb7185] rounded-lg hover:bg-[#e94560] transition"
-            >
-              Cerrar sesión
-            </button>
-          </div>
         </>
       )}
+
+      {tabActiva === "aportes" && (
+        <>
+          {loadingAportes ? (
+            <p className="text-center text-[#9f86c0] animate-pulse">Cargando solicitudes de aporte...</p>
+          ) : (
+            <section className="mb-8">
+              <h2 className="mb-3 text-xl font-semibold text-[#9f86c0]">Solicitudes de Aporte de Productos</h2>
+              {entradasAporte.length === 0 ? (
+                <p className="text-center text-gray-400">No hay solicitudes de aporte pendientes.</p>
+              ) : (
+                <div className="p-3 overflow-auto bg-[#16213e] border border-[#4a4e69] rounded-lg shadow-md max-h-96">
+                  <table className="w-full text-xs text-gray-200 sm:text-sm">
+                    <thead>
+                      <tr className="bg-[#0f3460] text-[#e94560] uppercase text-[0.65rem] sm:text-xs">
+                        <th className="px-2 py-1">Título</th>
+                        <th className="px-2 py-1">Autor</th>
+                        <th className="px-2 py-1">Contacto</th>
+                        <th className="px-2 py-1">Estado</th>
+                        <th className="px-2 py-1">Fecha</th>
+                        <th className="px-2 py-1">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {entradasAporte.map((entrada) => (
+                        <tr
+                          key={entrada.id}
+                          className="border-b border-[#4a4e69] hover:bg-[#0f3460]"
+                        >
+                          <td className="px-2 py-1">{entrada.titulo}</td>
+                          <td className="px-2 py-1">{entrada.autor}</td>
+                          <td className="px-2 py-1">{entrada.contacto || "-"}</td>
+                          <td className="px-2 py-1 capitalize">{entrada.estado || "pendiente"}</td>
+                          <td className="px-2 py-1">{new Date(entrada.creado_en).toLocaleDateString()}</td>
+                          <td className="px-2 py-1 space-x-2 whitespace-nowrap">
+                            {entrada.estado !== "aprobado" && (
+                              <button
+                                onClick={() => actualizarEstadoAporte(entrada.id, "aprobado")}
+                                className="font-semibold text-green-500 hover:text-green-400"
+                              >
+                                Aprobar
+                              </button>
+                            )}
+                            {entrada.estado !== "rechazado" && (
+                              <button
+                                onClick={() => actualizarEstadoAporte(entrada.id, "rechazado")}
+                                className="font-semibold text-red-500 hover:text-red-400"
+                              >
+                                Rechazar
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          )}
+        </>
+      )}
+
+      <div className="flex justify-center mt-6">
+        <button
+          onClick={handleLogout}
+          className="w-full max-w-xs px-6 py-3 font-semibold text-white bg-[#fb7185] rounded-lg hover:bg-[#e94560] transition"
+        >
+          Cerrar sesión
+        </button>
+      </div>
     </div>
   );
 }
