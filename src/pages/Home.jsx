@@ -83,6 +83,35 @@ export default function Home() {
       <div className="mb-12">
         <HeroNosotros onReportClick={() => navigate("/Nosotros")} />
       </div>
+
+      {/* Tarjeta para descargar la App Android */}
+      <section className="p-6 mt-12 text-center text-white border border-gray-700 shadow-md bg-dark-gray rounded-xl">
+        <h2 className="mb-4 text-3xl font-bold text-electric-blue">Descargá la App de VAPE.AR</h2>
+        <p className="mb-4 text-lg text-gray-300">
+          Llevá VAPE.AR en tu celular. Explorá productos, hacé pedidos y descubrí tiendas desde cualquier lugar.
+        </p>
+        <a
+          href="https://github.com/ParedGuillermo/Vape.Ar/releases/download/V1/VAPE-AR-0_4_debug.apk"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-6 py-3 font-semibold transition rounded-full shadow-lg text-very-dark-bg bg-electric-blue hover:bg-violet-neon"
+        >
+          Descargar App Android
+        </a>
+
+        {/* Instrucciones para instalar la APK */}
+        <div className="mt-6 text-sm text-left text-gray-400 max-w-xl mx-auto bg-[#1e1e1e] p-4 rounded-md border border-gray-600">
+          <p className="mb-2 font-semibold text-violet-neon">⚠ Instrucciones de instalación:</p>
+          <ul className="space-y-1 list-disc list-inside">
+            <li>1. Al descargar, tu celular puede mostrar un mensaje de advertencia.</li>
+            <li>2. Tocá <strong>"Descargar de todos modos"</strong> si aparece.</li>
+            <li>3. Al abrir el archivo, seleccioná <strong>"Instalar"</strong>.</li>
+            <li>4. Si te pide analizar la app, podés hacerlo o continuar.</li>
+            <li>5. Luego tocá <strong>"Instalar"</strong> nuevamente.</li>
+            <li>6. Una vez completada la instalación, tocá <strong>"Abrir"</strong> y empezá a usar VAPE.AR.</li>
+          </ul>
+        </div>
+      </section>
     </div>
   );
 }
