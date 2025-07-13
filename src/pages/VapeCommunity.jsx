@@ -5,16 +5,14 @@ export default function VapeCommunity() {
   const navigate = useNavigate();
 
   const sections = [
-    { name: "Salud y Seguridad", icon: "🫁", path: "/vape-community/salud-y-seguridad" },
-    { name: "Estilos de Vida y Vapeo", icon: "🌬️", path: "/vape-community/estilos-de-vida-y-vapeo" },
+    { name: "Salud y Seguridad", icon: "❤", path: "/vape-community/salud-y-seguridad" },
     { name: "Novedades y Tendencias", icon: "⚡", path: "/vape-community/novedades-y-tendencias" },
     { name: "Eventos y Encuentros", icon: "🎉", path: "/vape-community/eventos-y-encuentros" },
     { name: "Legislación y Regulación", icon: "📜", path: "/vape-community/legislacion-y-regulacion" },
     { name: "Guías y Tutoriales", icon: "📘", path: "/vape-community/guias-y-tutoriales" },
     { name: "Comunidad y Foros", icon: "💬", path: "/vape-community/comunidad-y-foros" },
-    { name: "Blog", icon: "📝", path: "/vape-community/blog" },
     { name: "Reseñas de Productos", icon: "🔍", path: "/vape-community/reseñas-de-productos" },
-    { name: "Tienda y Productos", icon: "🛒", path: "/vape-community/tienda-y-productos" },
+    { name: "Equipos", icon: "⚠", path: "/vape-community/tienda-y-productos" },
   ];
 
   return (
