@@ -84,6 +84,31 @@ export default function Home() {
         <HeroNosotros onReportClick={() => navigate("/Nosotros")} />
       </div>
 
+      {/* Tarjeta de visibilidad para colaboradores */}
+      <section
+        onClick={() => navigate("/colaboraciones")}
+        className="cursor-pointer p-6 mb-12 bg-gradient-to-r from-[#e94560] via-[#d63447] to-[#bb2e3f] rounded-xl shadow-lg text-white max-w-4xl mx-auto hover:scale-[1.03] transition-transform"
+        aria-label="Invitación a colaborar y aparecer en la página principal"
+      >
+        <h2 className="mb-3 text-3xl font-extrabold drop-shadow-lg">
+          ¿Querés aparecer en la página principal?
+        </h2>
+        <p className="mb-4 text-lg drop-shadow-md">
+          Aumentá la visibilidad de tu marca o producto aportando para análisis, reviews o colaborando con Vape.AR. 
+          ¡Sumate a nuestra comunidad y hacé crecer tu alcance!
+        </p>
+        <button
+          type="button"
+          className="px-6 py-3 font-semibold text-[#e94560] bg-white rounded-full hover:bg-gray-100 transition"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate("/colaboraciones");
+          }}
+        >
+          Colaborar ahora
+        </button>
+      </section>
+
       {/* Tarjeta para descargar la App Android */}
       <section className="p-6 mt-12 text-center text-white border border-gray-700 shadow-md bg-dark-gray rounded-xl">
         <h2 className="mb-4 text-3xl font-bold text-electric-blue">Descargá la App de VAPE.AR</h2>
