@@ -11,8 +11,6 @@ module.exports = {
         'electric-blue': '#2A7FFF',
         'violet-neon': '#9D4EDD',
         'light-gray': '#B0B3C6',
-
-        // Colores neón personalizados
         'neon-pink': '#FF49DB',
         'neon-cyan': '#00FFF7',
       },
@@ -29,10 +27,20 @@ module.exports = {
         'neon-cyan': '0 0 5px #00FFF7',
       },
       fontSize: {
-        base: '0.875rem',  // 14px en vez de 16px
-        sm: '0.75rem',     // 12px
-        lg: '1rem',        // 16px (antes 1.125rem)
-        xl: '1.125rem',    // 18px
+        base: '0.875rem',
+        sm: '0.75rem',
+        lg: '1rem',
+        xl: '1.125rem',
+      },
+      animation: {
+        'pulse-slow': 'pulse 6s ease-in-out infinite',
+        'float': 'float 20s linear infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
       },
     },
     screens: {
